@@ -1,0 +1,15 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/create/create"
+		},
+		{
+			"path": "pages/index/index"
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "#fff",
+		"navigationBarBackgroundColor": "#7F83BB",
+		"backgroundColor":"#7F83BB"
+	}
+}
