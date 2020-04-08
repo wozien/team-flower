@@ -1,13 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import actions from './actions.js';
 import mutations from './mutations.js';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
 	state: {
-		userInfo: uni.getStorageSync('USER_INFO') || null
+		openid: uni.getStorageSync('OPEN_ID') || '',
+		userInfo: null
 	},
+	actions,
 	mutations
 })
 

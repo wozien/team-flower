@@ -13,32 +13,47 @@
 </template>
 
 <script>
-	import { mapState, mapMutations } from 'vuex';
+	import { mapState, mapActions, mapMutations } from 'vuex';
 	
 	export default {
 		computed: {
-			...mapState(['userInfo'])
+			...mapState(['openid'])
+		},
+		
+		created() {
+			// 登录成功查询我的团队数据
+			if(this.openid) {
+				console.log('search team')
+			} else {
+				console.log('no login')
+			}
 		},
 		
 		onLoad() {
-			if(this.userInfo) {
-				// 请求我的团队数据
-			}
+			// 授权用户获取用户信息
+			uni.getSetting().then(res => {
+				if(res['scope.userInfo']) {
+					uni.getUserInfo().then(res => {
+						this.setUserInfo(res.userInfo);
+					})
+				}
+			})
 		},
 		
 		methods: {
 			onGetUserInfo(e) {
 				// 授权成功
 				if(e.detail) {
-					if(!this.userInfo) {
-						this.setUserInfo(e.detail.userInfo)
-					}
+					this.login();
+					this.setUserInfo(e.detail.userInfo)
 				}
 			},
 			
 			...mapMutations({
 				setUserInfo: 'SET_USERINFO'
-			})
+			}),
+			
+			...mapActions(['login'])
 		}
 	}
 </script>
