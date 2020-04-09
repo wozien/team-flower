@@ -21,6 +21,7 @@
 	page {
 		height: 100%;
 		background-color: $bg-color;
+		font-size:  28rpx;
 	}
 	page, view {
 		box-sizing: border-box;
