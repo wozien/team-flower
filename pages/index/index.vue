@@ -14,6 +14,7 @@
 
 <script>
 	import { mapState, mapActions, mapMutations } from 'vuex';
+	import { getCollection } from '@/common/js/db.js';
 	
 	export default {
 		computed: {
@@ -23,19 +24,31 @@
 		created() {
 			// 登录成功查询我的团队数据
 			if(this.openid) {
-				console.log('search team')
-			} else {
-				console.log('no login')
-			}
+				const teamCollection = getCollection('team');
+				const myTeams = teamCollection.where({
+					'members.openid': this.openid
+				}).get().then(res => {
+					if(res.errMsg="collection.get:ok") {
+						if(res.data.length) {
+							this.setTeams(res.data);
+							// TODO 跳转rank页面
+						}
+					}
+				})
+			} 
 		},
 		
 		onLoad() {
 			// 授权用户获取用户信息
-			uni.getSetting().then(res => {
-				if(res['scope.userInfo']) {
-					uni.getUserInfo().then(res => {
-						this.setUserInfo(res.userInfo);
-					})
+			uni.getSetting({
+				success: res => {
+					if(res.authSetting['scope.userInfo']) {
+						uni.getUserInfo({
+							success: res => {
+								this.setUserInfo(res.userInfo);
+							}
+						})
+					}
 				}
 			})
 		},
@@ -48,6 +61,7 @@
 						this.login();
 						this.setUserInfo(e.detail.userInfo)
 					}
+					
 					uni.navigateTo({
 						url: '../create/create'
 					})
@@ -55,7 +69,8 @@
 			},
 			
 			...mapMutations({
-				setUserInfo: 'SET_USERINFO'
+				setUserInfo: 'SET_USERINFO',
+				setTeams: 'SET_MY_TEAMS'
 			}),
 			
 			...mapActions(['login'])

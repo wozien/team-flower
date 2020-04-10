@@ -9,6 +9,9 @@ const mutations = {
 	[types.SET_OPEN_ID](state, openid) {
 		state.openid = openid;
 		uni.setStorageSync('OPEN_ID', openid);
+	},
+	[types.SET_MY_TEAMS](state, teams) {
+		state.teams = teams;
 	}
 }
 

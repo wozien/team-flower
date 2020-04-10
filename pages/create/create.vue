@@ -1,25 +1,61 @@
 <template>
 	<view class="create-page">
 			<text>请输入你的团队名称</text>
-			<input type="text" :focus="true"/>
-			<tf-button type="primary" class="create-btn">立即创建</tf-button>
+			<input type="text" :focus="true" v-model="name"/>
+			<tf-button type="primary" class="create-btn" @click.native="onCreate">立即创建</tf-button>
 	</view>
 </template>
 
 <script>
+	import { mapState } from 'vuex';
+	import { getCollection } from '@/common/js/db.js';
+	import Team from '@/common/js/Team.js';
 	
 	export default {
+		
+		data() {
+			return {
+				name: ''
+			}
+		},
+		
+		computed: {
+			...mapState(['userInfo'])
+		},
+		
 		onShow() {
-			console.log('show')
-			setTimeout(() => {
-				uni.setNavigationBarColor({
-					frontColor: '#000000'
-				})
-				uni.setNavigationBarTitle({
-					title: '创建团队'
-				})
-			}, 400)
-			
+			uni.setNavigationBarTitle({
+				title: '创建团队'
+			})
+			uni.setNavigationBarColor({
+				frontColor: '#000000',
+				backgroundColor: '#F8F8F8'
+			})
+			uni.setBackgroundColor({
+				backgroundColor: '#f8f8f8'
+			})
+		},
+		
+		methods:{
+			onCreate() {
+				if(this.name) {
+					// TODO 团队名重复校验
+					
+					const teamCollection = getCollection('team');
+					const teamData = new Team(this.name, this.userInfo);
+				
+					teamCollection.add({
+						data: teamData
+					}).then(res => {
+						if(res.errMsg === 'collection.add:ok') {
+							console.log(res._id)
+							uni.navigateTo({
+								url: `./create-success?team_id=${res._id}`
+							})
+						}
+					})
+				}
+			}
 		}
 	}
 </script>

@@ -22,6 +22,9 @@
 		height: 100%;
 		background-color: $bg-color;
 		font-size:  28rpx;
+		> view {
+			height: 100%;
+		}
 	}
 	page, view {
 		box-sizing: border-box;
