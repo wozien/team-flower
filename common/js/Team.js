@@ -8,6 +8,7 @@ class Team {
 		this.name = name;
 		this.master_id = uni.getStorageSync('OPEN_ID');
 		this.addMember(this.master_id, user.nickName)
+		this.date = new Date();
 	}
 	
 	addMember(openid, nickname) {

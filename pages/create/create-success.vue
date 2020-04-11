@@ -1,17 +1,28 @@
 <template>
-	<div class="create-success">
+	<view class="create-success">
 		<icon type="success" size="60" color="#7F83BB"></icon>
 		<text class="flg">创建成功</text>
-		<text class="step-text">最后一步，快邀请好友加入你的团队</text>
+		<text class="step-text" @click="invite">最后一步，快邀请好友加入你的团队</text>
 		<tf-button type="primary" :width="320" style="margin-top: 40px">邀请成员</tf-button>
-		<text class="goto">先进去看看</text>
-	</div>
+		<text class="goto" @click="toRank">先进去看看</text>
+	</view>
 </template>
 
 <script>
 	export default {
 		onLoad({ team_id }) {
 			console.log(team_id)
+			this.teamId = team_id
+		},
+		methods: {
+			invite() {
+				// TODO 微信邀请
+			},
+			toRank() {
+				uni.navigateTo({
+					url: "../rank/rank?team_id=" + this.teamId
+				})
+			}
 		}
 	}
 </script>

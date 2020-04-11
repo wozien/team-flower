@@ -23,19 +23,6 @@
 			...mapState(['userInfo'])
 		},
 		
-		onShow() {
-			uni.setNavigationBarTitle({
-				title: '创建团队'
-			})
-			uni.setNavigationBarColor({
-				frontColor: '#000000',
-				backgroundColor: '#F8F8F8'
-			})
-			uni.setBackgroundColor({
-				backgroundColor: '#f8f8f8'
-			})
-		},
-		
 		methods:{
 			onCreate() {
 				if(this.name) {
@@ -43,15 +30,15 @@
 					
 					const teamCollection = getCollection('team');
 					const teamData = new Team(this.name, this.userInfo);
-				
+					
 					teamCollection.add({
 						data: teamData
 					}).then(res => {
 						if(res.errMsg === 'collection.add:ok') {
 							console.log(res._id)
-							uni.navigateTo({
+							uni.redirectTo({
 								url: `./create-success?team_id=${res._id}`
-							})
+							});
 						}
 					})
 				}

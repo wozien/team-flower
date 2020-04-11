@@ -30,9 +30,18 @@
 				}).get().then(res => {
 					if(res.errMsg="collection.get:ok") {
 						if(res.data.length) {
-							this.setTeams(res.data);
+							const teams = res.data.map(item => {
+								return {
+									id: item._id,
+									name: item.name
+								}
+							})
+							this.setTeams(teams);
 							// TODO 跳转rank页面
-						}
+							uni.navigateTo({
+								url: '../rank/rank?team_id=' + teams[0].id
+							})
+						} 
 					}
 				})
 			} 
