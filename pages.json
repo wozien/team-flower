@@ -27,6 +27,9 @@
 			"style":{
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/rank/detail"
 		}
 	],
 	"globalStyle": {
@@ -39,7 +42,7 @@
 				{
 					"name": "my", //模式名称
 					"path": "pages/rank/rank",
-					"query": "team_id=79a2c43f5e91ee360081debf1f678c89"
+					"query": "team_id=42c9a7b15e92c54a007fa311171732b8"
 				}
 				// {
 				// 	"name": "my", //模式名称

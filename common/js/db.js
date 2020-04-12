@@ -7,3 +7,8 @@ export const getCollection = name => {
 export const getDoc = obj => {
 	return this.getCollection(obj.name).doc(obj.doc);
 }
+
+export const getTeam = teamId => {
+	const teamCollection = getCollection('team');
+	return teamCollection.doc(teamId).get();
+}

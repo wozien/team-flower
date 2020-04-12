@@ -37,9 +37,10 @@
 								}
 							})
 							this.setTeams(teams);
+							const team_id = uni.getStorageSync('TEAM_ID') || teams[0].id;
 							// TODO 跳转rank页面
 							uni.navigateTo({
-								url: '../rank/rank?team_id=' + teams[0].id
+								url: '../rank/rank?team_id=' + team_id
 							})
 						} 
 					}

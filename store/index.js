@@ -9,7 +9,8 @@ const store = new Vuex.Store({
 	state: {
 		openid: uni.getStorageSync('OPEN_ID') || '',
 		userInfo: null,
-		teams: []
+		teams: [],
+		team: {}
 	},
 	actions,
 	mutations

@@ -12,6 +12,9 @@ const mutations = {
 	},
 	[types.SET_MY_TEAMS](state, teams) {
 		state.teams = teams;
+	},
+	[types.SET_TEAM](state, team) {
+		state.team = team;
 	}
 }
 

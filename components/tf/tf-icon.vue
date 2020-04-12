@@ -1,5 +1,8 @@
 <template>
-	<text class="tf-icon iconfont" :class="'icon' + icon" @click="$emit('click')"></text>
+	<text class="tf-icon iconfont" 
+	 :class="'icon' + icon" @click="$emit('click')"
+	 :style="{ fontSize: size + 'px' }"
+	 ></text>
 </template>
 
 <script>
@@ -7,7 +10,11 @@
 		name: 'TfIcon',
 		
 		props: {
-			icon: String
+			icon: String,
+			size: {
+				type: Number,
+				default: 16
+			}
 		}
 	}
 </script>
@@ -16,5 +23,6 @@
 	.tf-icon {
 		font-size: 32rpx;
 		margin-right: 12rpx;
+		text-align: center;
 	}
 </style>
