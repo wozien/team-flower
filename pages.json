@@ -25,11 +25,15 @@
 		{
 			"path":"pages/rank/rank",
 			"style":{
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll":true
 			}
 		},
 		{
-			"path": "pages/rank/detail"
+			"path": "pages/rank/detail",
+			"style":{
+				"disableScroll": true
+			}
 		}
 	],
 	"globalStyle": {

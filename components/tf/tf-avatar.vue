@@ -1,5 +1,9 @@
 <template>
-	<view class="tf-avatar" :class="{'tf-avatar-large': size === 'large'}">
+	<view class="tf-avatar" 
+		:class="{
+			'tf-avatar-large': size === 'large',
+			'tf-avatar-small': size === 'small'
+			}">
 		<image :src="url" alt="头像" />
 	</view>
 </template>
@@ -27,6 +31,10 @@
 		&.tf-avatar-large {
 			width: 70px;
 			height: 70px;
+		}
+		&.tf-avatar-small {
+			width: 30px;
+			height: 30px;
 		}
 		> image {
 			width: 100%;
