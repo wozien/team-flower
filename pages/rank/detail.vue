@@ -41,9 +41,10 @@
 			</view>
 			
 			<view class="footer" slot="footer">
-				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close" style="margin-right: 16px;">扣除</tf-button>
+				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close"
+				 style="margin-right: 16px;" @click.native="updateFlower(false)">扣除</tf-button>
 				<tf-button v-if="isSelf" :width="125" size="small" icon="update">修改昵称</tf-button>
-				<tf-button v-else :width="125" size="small" icon="aixin" type="assia">感谢</tf-button>
+				<tf-button v-else :width="125" size="small" icon="aixin" type="assia" @click.native="updateFlower(true)">感谢</tf-button>
 			</view>
 		</tf-layout>
 	</view>
@@ -128,6 +129,19 @@
 					data.push({last: true})
 				}
 				this.history = data;
+			},
+			
+			updateFlower(add) {
+				const data = {
+					add,
+					to: {
+						openid: this.member.openid,
+						nickname: this.member.nickname
+					}
+				}
+				uni.navigateTo({
+					url:"./give?item=" + encodeURIComponent(JSON.stringify(data))
+				})
 			}
 		}
 	}

@@ -34,6 +34,12 @@
 			"style":{
 				"disableScroll": true
 			}
+		},
+		{
+			"path":"pages/rank/give",
+			"style":{
+				"disableScroll":true
+			}
 		}
 	],
 	"globalStyle": {

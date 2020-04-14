@@ -1,5 +1,5 @@
 <template>
-	<button class="tf-button" 
+	<button class="tf-button"
 		:class="['tf-button-' + type, { 'tf-button-small': size === 'small'}]"
 		:style="{width: width ? width + 'px' : ''}">
 		<text v-if="icon" class="iconfont" :class="'icon' + icon"></text>
