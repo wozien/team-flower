@@ -104,6 +104,7 @@
 				members.sort((a,b) => b.flowers - a.flowers);
 				members.forEach((member, index) => {
 					member.order = index + 1;
+					members.flowers = +members.flowers;
 				})
 				this.my = members.find(item => item.openid === this.openid)
 				this.setTeam(team);

@@ -1,7 +1,8 @@
 <template>
 	<button class="tf-button"
 		:class="['tf-button-' + type, { 'tf-button-small': size === 'small'}]"
-		:style="{width: width ? width + 'px' : ''}">
+		:style="{width: width ? width + 'px' : ''}"
+		:open-type="openType || ''">
 		<text v-if="icon" class="iconfont" :class="'icon' + icon"></text>
 		<slot></slot>
 	</button>
@@ -18,7 +19,8 @@
 			},
 			size: String,
 			width: Number,
-			icon: String
+			icon: String,
+			openType: String
 		}
 	}
 </script>

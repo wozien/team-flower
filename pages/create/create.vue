@@ -35,9 +35,13 @@
 						data: teamData
 					}).then(res => {
 						if(res.errMsg === 'collection.add:ok') {
-							console.log(res._id)
+							const data = {
+								team_id: res._id,
+								team_name: this.name,
+								master: this.userInfo.nickName,
+							}
 							uni.redirectTo({
-								url: `./create-success?team_id=${res._id}`
+								url: './create-success?info=' + JSON.stringify(data)
 							});
 						}
 					})

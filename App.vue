@@ -1,6 +1,10 @@
 <script>
 	export default {
-		onLaunch() {
+		globalData: {
+			scene: 1001
+		},
+		
+		onLaunch(e) {	
 			if (!wx.cloud) {
 				console.error('请使用 2.2.3 或以上的基础库以使用云能力')
 			} else {
@@ -13,6 +17,8 @@
 					traceUser: true,
 				})
 			}
+			
+			this.globalData.scene = e.scene;
 		}
 	}
 </script>

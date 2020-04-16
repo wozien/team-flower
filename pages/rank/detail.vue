@@ -78,24 +78,30 @@
 			...mapState(['team', 'openid'])
 		},
 		
+		created() {
+			uni.$on('rank-detail-reload', this.load);
+		},
+		
 		onLoad({detail_id}) {
 			this.to = detail_id;
 			this.member = this.team.members.find(mb => mb.openid === detail_id);
-			
-			// 获取流水记录
-			const historySet = getCollection('history');
-			historySet.where({
-				team_id: this.team._id,
-				to: this.to
-			}).get().then(res => {
-				console.log(res)
-				if(res.errMsg === 'collection.get:ok') {
-					this.formatHistory(res.data)
-				}
-			})
+			this.load();
 		},
 		
 		methods: {
+			load() {
+				// 获取流水记录
+				const historySet = getCollection('history');
+				historySet.where({
+					team_id: this.team._id,
+					to: this.to
+				}).get().then(res => {
+					if(res.errMsg === 'collection.get:ok') {
+						this.formatHistory(res.data)
+					}
+				})
+			},
+			
 			padZero(num) {
 				return (num + '').padStart(2, '0');
 			},

@@ -3,7 +3,7 @@
 		<view class="slogan">
 			<text>不知道如何激励年轻员工？</text>
 			<text>也许你该试试更年轻的管理方式</text>
-			<text class="name">--- 红花榜</text>
+			<text class="name">--- 团队小红花</text>
 		</view>
 		<button class="btn" 
 			open-type="getUserInfo"
@@ -22,33 +22,10 @@
 		},
 		
 		created() {
-			// 登录成功查询我的团队数据
-			if(this.openid) {
-				const teamCollection = getCollection('team');
-				const myTeams = teamCollection.where({
-					'members.openid': this.openid
-				}).get().then(res => {
-					if(res.errMsg="collection.get:ok") {
-						if(res.data.length) {
-							const teams = res.data.map(item => {
-								return {
-									id: item._id,
-									name: item.name
-								}
-							})
-							this.setTeams(teams);
-							const team_id = uni.getStorageSync('TEAM_ID') || teams[0].id;
-							// TODO 跳转rank页面
-							uni.navigateTo({
-								url: '../rank/rank?team_id=' + team_id
-							})
-						} 
-					}
-				})
-			} 
+
 		},
 		
-		onLoad() {
+		onLoad({is_create}) {
 			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
@@ -61,6 +38,23 @@
 					}
 				}
 			})
+			
+			// 登录成功查询我的团队数据
+			if(this.openid) {
+				const teamCollection = getCollection('team');
+				const myTeams = teamCollection.where({
+					'members.openid': this.openid
+				}).get().then(({data}) => {
+					console.log(data)
+					if(data.length && !is_create) {
+						// 跳转rank页面
+						const team_id = uni.getStorageSync('TEAM_ID') || data[0]._id;
+						uni.navigateTo({
+							url: '../rank/rank?team_id=' + team_id
+						});
+					}
+				})
+			} 
 		},
 		
 		methods: {

@@ -3,20 +3,32 @@
 		<icon type="success" size="60" color="#7F83BB"></icon>
 		<text class="flg">创建成功</text>
 		<text class="step-text" @click="invite">最后一步，快邀请好友加入你的团队</text>
-		<tf-button type="primary" :width="320" style="margin-top: 40px">邀请成员</tf-button>
+		<tf-button type="primary" 
+		   :width="320" 
+			 style="margin-top: 40px"
+			 @click.native="invite">邀请成员</tf-button>
 		<text class="goto" @click="toRank">先进去看看</text>
 	</view>
 </template>
 
 <script>
 	export default {
-		onLoad({ team_id }) {
-			console.log(team_id)
-			this.teamId = team_id
+		data() {
+			return {
+				info: {}
+			}
 		},
+		
+		onLoad({ info }) {
+			console.log(info)
+			this.info = info
+		},
+		
 		methods: {
 			invite() {
-				// TODO 微信邀请
+				uni.navigateTo({
+					url: './invite?info=' + this.info
+				})
 			},
 			toRank() {
 				uni.navigateTo({

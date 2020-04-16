@@ -5,18 +5,21 @@
 			<input type="number" v-model="number" placeholder="0.0" :focus="true" />
 		</view>
 		<view class="message">
-			<textarea placeholder="感谢你的辛勤付出~" v-model="message" :focus="true"/>
+			<textarea placeholder="感谢你的辛勤付出~" v-model="message" :focus="true" placeholder-style="color: #ccc"/>
 		</view>
 		<view class="flower">
 			<tf-icon icon="flower-plain" :size="34" style="color: #ccc"></tf-icon>
 			<text>{{ number }}</text>
 		</view>
 		
-		<tf-button :type="add ? 'assia' : 'primary'" :width="200">{{ desc + '小红花'}}</tf-button>
+		<tf-button :type="add ? 'assia' : 'primary'" :width="200" @click.native="onClickBtn">{{ desc + '小红花'}}</tf-button>
 	</view>
 </template>
 
 <script>
+	import { mapState } from 'vuex';
+	import { getCollection } from '../../common/js/db.js';
+	
 	export default {
 		data() {
 			return {
@@ -30,7 +33,8 @@
 		computed: {
 			desc() {
 				return this.add ? '赠送' : '扣除';
-			}
+			},
+			...mapState(['openid', 'team'])
 		},
 		
 		onLoad({item}) {
@@ -41,6 +45,73 @@
 			uni.setNavigationBarTitle({
 				title
 			})
+		},
+		
+		methods: {
+			give() {
+				const members = this.team.members.slice(0);
+				const my = members.find(mb => mb.openid === this.openid);
+				const isMaster = this.team.master_id === this.openid;
+				
+				if(!isMaster && my.flowers < this.number) {
+					// 自己的花小于赠送的
+					uni.showToast({
+						title: '你没有多余的花可以赠送哦～',
+						icon: "none"
+					})
+				}
+				
+				// 修改花的数量
+				const to = members.find(mb => mb.openid === this.to.openid);
+				if(this.add) {
+					to.flowers += +this.number;
+					!isMaster && (my.flowers -= +this.number);
+				} else {
+					to.flowers -= +this.number;
+				}
+				
+				const teamSet = getCollection('team');
+				const prom1 = teamSet.doc(this.team._id).update({
+					data: { members }
+				});
+				
+				// 增加流水记录
+				const data = {
+					team_id: this.team._id,
+					from: this.openid,
+					to: this.to.openid,
+					number: this.number,
+					message: this.message,
+					add: this.add,
+					date: new Date()
+				}
+				const historySet = getCollection('history');
+				const prom2 = historySet.add({ data });
+				
+				Promise.all([prom1, prom2]).then(([res]) => {
+					uni.$emit('rank-detail-reload');
+					uni.showToast({
+						title: this.desc + '成功',
+						success() {
+							uni.navigateBack({});
+						}
+					});
+				}).catch(e => {
+					console.warn('失败：' + e.message);
+				})
+			},
+			
+			onClickBtn() {
+				const content = `确定${this.desc+this.to.nickname}朵小红花?`;
+				uni.showModal({
+					content,
+					success: res => {
+						if(res.confirm) {
+							this.give();
+						}
+					}
+				})
+			}
 		}
 	}
 </script>
@@ -49,10 +120,10 @@
 	.give-page{
 		height: 100%;
 		background-color: #fff;
-		padding: 0 12px;
+		padding: 0 14px;
 		overflow: hidden;
 		>view {
-			background-color: #f0f0f0;
+			background-color: #f1f1f1;
 			padding: 10px;
 			border-radius: 4px;
 			&.number {

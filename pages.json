@@ -23,6 +23,14 @@
 			}
 		},
 		{
+			"path": "pages/create/invite",
+			"style":{
+				"navigationBarBackgroundColor":"#f8f8f8",
+				"backgroundColor":"#f8f8f8",
+				"disableScroll": true
+			}
+		},
+		{
 			"path":"pages/rank/rank",
 			"style":{
 				"navigationStyle": "custom",
@@ -49,15 +57,16 @@
 	"condition": { //模式配置，仅开发期间生效
 	    "current": 0, //当前激活的模式（list 的索引项）
 	    "list": [
-				{
-					"name": "my", //模式名称
-					"path": "pages/rank/rank",
-					"query": "team_id=42c9a7b15e92c54a007fa311171732b8"
-				}
 				// {
 				// 	"name": "my", //模式名称
-				// 	"path": "pages/index/index"
+				// 	"path": "pages/rank/rank",
+				// 	"query": "team_id=42c9a7b15e92c54a007fa311171732b8"
 				// }
+				{
+					"name": "my", //模式名称
+					"path": "pages/create/create-success",
+					"query": "info={\"team_id\":\"1d1104975e987fce004b86801d71e32b\",\"team_name\":\"浪潮inSuite\",\"master\":\"James💤\"}"
+				}
 	    ]
 	}
 }
