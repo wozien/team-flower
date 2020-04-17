@@ -1,8 +1,10 @@
 <template>
-	<button class="tf-button"
+	<button 
+	   class="tf-button"
 		:class="['tf-button-' + type, { 'tf-button-small': size === 'small'}]"
 		:style="{width: width ? width + 'px' : ''}"
-		:open-type="openType || ''">
+		:open-type="openType || ''"
+		@click="$emit('click')">
 		<text v-if="icon" class="iconfont" :class="'icon' + icon"></text>
 		<slot></slot>
 	</button>

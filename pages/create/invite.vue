@@ -4,7 +4,7 @@
 			<image src="../../static/img/invite.png"></image>
 			<text class="text">Hi, 你来了~</text>
 			<text class="text">{{ master }} 邀请你加入 {{ team_name }} 团队</text>
-			<tf-button v-if="!invite" type="primary" open-type="share">立即邀请好友</tf-button>
+			<tf-button v-if="!isInvite" type="primary" open-type="share">立即邀请好友</tf-button>
 			<block v-else>
 				<tf-button type="primary" @click.native="join">立即加入</tf-button>
 				<text class="create-my" @click="createTeam">我要创建自己的团队</text>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+	
+	const app = getApp();
 	
 	export default {
 		data() {
@@ -25,8 +27,13 @@
 			}
 		},
 		
+		computed: {
+			isInvite() {
+				return (this.invite || [1007, 1008].includes(app.globalData.scene));
+			}
+		},
+		
 		onLoad({info}) {
-			console.log(info);
 			info = JSON.parse(info);
 			this.master = info.master
 			this.team_id = info.team_id
@@ -34,8 +41,10 @@
 			this.invite = info.invite || 0
 		},
 		
-		onShareAppMessage() {
-			console.log(this)
+		onShareAppMessage(res) {
+			if(res.from === 'button') {
+				console.log(res.target);
+			}
 			const data = {
 				master: this.master,
 				team_id: this.team_id,

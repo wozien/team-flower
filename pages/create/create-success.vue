@@ -21,7 +21,7 @@
 		
 		onLoad({ info }) {
 			console.log(info)
-			this.info = info
+			this.info = info;
 		},
 		
 		methods: {
@@ -31,8 +31,9 @@
 				})
 			},
 			toRank() {
+				const info = JSON.parse(this.info);
 				uni.navigateTo({
-					url: "../rank/rank?team_id=" + this.teamId
+					url: "../rank/rank?team_id=" + info.team_id
 				})
 			}
 		}

@@ -91,10 +91,9 @@
 		},
 		
 		onLoad({team_id}) {
+			console.log(team_id)
 			getTeam(team_id).then(res => {
-				if(res.errMsg === 'document.get:ok') {
-					this.calcOrder(res.data);
-				}
+				this.calcOrder(res.data);
 			})
 		},
 		

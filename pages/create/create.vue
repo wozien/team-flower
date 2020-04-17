@@ -2,7 +2,7 @@
 	<view class="create-page">
 			<text>请输入你的团队名称</text>
 			<input type="text" :focus="true" v-model="name"/>
-			<tf-button type="primary" class="create-btn" @click.native="onCreate">立即创建</tf-button>
+			<tf-button type="primary" class="create-btn" @click="onCreate">立即创建</tf-button>
 	</view>
 </template>
 
@@ -34,16 +34,14 @@
 					teamCollection.add({
 						data: teamData
 					}).then(res => {
-						if(res.errMsg === 'collection.add:ok') {
-							const data = {
-								team_id: res._id,
-								team_name: this.name,
-								master: this.userInfo.nickName,
-							}
-							uni.redirectTo({
-								url: './create-success?info=' + JSON.stringify(data)
-							});
+						const data = {
+							team_id: res._id,
+							team_name: this.name,
+							master: this.userInfo.nickName,
 						}
+						uni.redirectTo({
+							url: './create-success?info=' + JSON.stringify(data)
+						});
 					})
 				}
 			}
