@@ -20,16 +20,22 @@
 		},
 		
 		computed: {
-			...mapState(['userInfo'])
+			...mapState(['openid', 'userInfo'])
+		},
+		
+		onShow() {
+			uni.setNavigationBarTitle({
+				title: '创建团队'
+			})
 		},
 		
 		methods:{
 			onCreate() {
 				if(this.name) {
 					// TODO 团队名重复校验
-					
+
 					const teamCollection = getCollection('team');
-					const teamData = new Team(this.name, this.userInfo);
+					const teamData = new Team(this.name, this.openid, this.userInfo);
 					
 					teamCollection.add({
 						data: teamData

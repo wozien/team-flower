@@ -14,18 +14,15 @@
 
 <script>
 	import { mapState, mapActions, mapMutations } from 'vuex';
-	import { getCollection } from '@/common/js/db.js';
+	import { getMyTeams } from '@/common/js/db.js';
 	
-	export default {
+	export default {	
 		computed: {
 			...mapState(['openid'])
 		},
 		
-		created() {
-
-		},
-		
 		onLoad({is_create}) {
+			this.isCreate = is_create || false;
 			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
@@ -38,17 +35,16 @@
 					}
 				}
 			})
-			
+		},
+		
+		onShow() {
+			if(this.isCreate) return;
 			// 登录成功查询我的团队数据
 			if(this.openid) {
-				const teamCollection = getCollection('team');
-				const myTeams = teamCollection.where({
-					'members.openid': this.openid
-				}).get().then(({data}) => {
-					console.log(data)
-					if(data.length && !is_create) {
+				getMyTeams(this.openid).then(res => {
+					if(res.length) {
 						// 跳转rank页面
-						const team_id = uni.getStorageSync('TEAM_ID') || data[0]._id;
+						const team_id = uni.getStorageSync('TEAM_ID') || res[0].id;
 						uni.navigateTo({
 							url: '../rank/rank?team_id=' + team_id
 						});
@@ -61,22 +57,24 @@
 			onGetUserInfo(e) {
 				// 授权成功
 				if(e.detail) {
+					this.setUserInfo(e.detail.userInfo);
+					
+					let prom = Promise.resolve();
 					if(!this.openid){
-						this.login();
-						this.setUserInfo(e.detail.userInfo)
+						prom = this.login();	
 					}
 					
-					uni.navigateTo({
-						url: '../create/create'
+					prom.then(() => {
+						uni.navigateTo({
+							url: '../create/create'
+						})
 					})
 				}
 			},
 			
 			...mapMutations({
-				setUserInfo: 'SET_USERINFO',
-				setTeams: 'SET_MY_TEAMS'
+				setUserInfo: 'SET_USERINFO'
 			}),
-			
 			...mapActions(['login'])
 		}
 	}

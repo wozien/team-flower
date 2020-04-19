@@ -3,37 +3,33 @@
 		<icon type="success" size="60" color="#7F83BB"></icon>
 		<text class="flg">创建成功</text>
 		<text class="step-text" @click="invite">最后一步，快邀请好友加入你的团队</text>
-		<tf-button type="primary" 
-		   :width="320" 
-			 style="margin-top: 40px"
-			 @click.native="invite">邀请成员</tf-button>
+		<tf-button type="primary" :width="320" style="margin-top: 40px" open-type="share">邀请成员</tf-button>
 		<text class="goto" @click="toRank">先进去看看</text>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
+	export default {		
+		onLoad({ info }) {
+			this.info = JSON.parse(info);
+		},
+		
+		onShareAppMessage() {
 			return {
-				info: {}
+				title: this.info.master + '邀请你加入' + this.info.team_name,
+				imageUrl: '../../static/img/invite.png',
+				path: '/pages/invite/invite?info=' + JSON.stringify(this.info),
+				success: res => {
+					console.log('invite send');
+					// TODO navigate to rank page
+				}
 			}
 		},
 		
-		onLoad({ info }) {
-			console.log(info)
-			this.info = info;
-		},
-		
 		methods: {
-			invite() {
-				uni.navigateTo({
-					url: './invite?info=' + this.info
-				})
-			},
 			toRank() {
-				const info = JSON.parse(this.info);
 				uni.navigateTo({
-					url: "../rank/rank?team_id=" + info.team_id
+					url: "../rank/rank?team_id=" + this.info.team_id
 				})
 			}
 		}

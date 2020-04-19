@@ -12,13 +12,13 @@
 			<text>{{ number }}</text>
 		</view>
 		
-		<tf-button :type="add ? 'assia' : 'primary'" :width="200" @click.native="onClickBtn">{{ desc + '小红花'}}</tf-button>
+		<tf-button :type="add ? 'assia' : 'primary'" :width="200" @click="onClickBtn">{{ desc + '小红花'}}</tf-button>
 	</view>
 </template>
 
 <script>
 	import { mapState } from 'vuex';
-	import { getCollection } from '../../common/js/db.js';
+	import { getCollection, command as _ } from '../../common/js/db.js';
 	
 	export default {
 		data() {
@@ -37,14 +37,15 @@
 			...mapState(['openid', 'team'])
 		},
 		
-		onLoad({item}) {
-			item = JSON.parse(decodeURIComponent(item))
-			this.add = item.add;
-			this.to = item.to;	
+		onLoad({info}) {
+			info = JSON.parse(info);
+			this.add = info.add;
+			this.to = info.to;	
+		},
+		
+		onShow() {
 			const title = (this.add ? '感谢' : '扣除') + this.to.nickname;
-			uni.setNavigationBarTitle({
-				title
-			})
+			uni.setNavigationBarTitle({ title });
 		},
 		
 		methods: {
@@ -53,29 +54,43 @@
 				const my = members.find(mb => mb.openid === this.openid);
 				const isMaster = this.team.master_id === this.openid;
 				
-				if(!isMaster && my.flowers < this.number) {
-					// 自己的花小于赠送的
+				if(!isMaster && my.quota < this.number) {
+					// 花额度不够
 					uni.showToast({
-						title: '你没有多余的花可以赠送哦～',
+						title: '您的小红花额度不足哦~',
 						icon: "none"
-					})
+					});
+					return;
 				}
 				
-				// 修改花的数量
-				const to = members.find(mb => mb.openid === this.to.openid);
-				if(this.add) {
-					to.flowers += +this.number;
-					!isMaster && (my.flowers -= +this.number);
-				} else {
-					to.flowers -= +this.number;
-				}
 				
-				const teamSet = getCollection('team');
-				const prom1 = teamSet.doc(this.team._id).update({
-					data: { members }
+				const teamCollection = getCollection('team');
+				// 修改被赠者花的数量
+				const inc = this.add ? +this.number : -this.number;
+				const prom1 = teamCollection.where({
+					_id: this.team._id,
+					'members.openid': this.to.openid
+				}).update({
+					data: {
+						'members.$.flowers': _.inc(inc)
+					}
 				});
 				
+				// 修改赠送者的积分
+				let prom2 = Promise.resolve();
+				if(!isMaster && this.add) {
+					prom2 = teamCollection.where({
+						_id: this.team._id,
+						'members.openid': this.openid
+					}).update({
+						data: {
+							'members.$.quota': _.inc(-inc)
+						}
+					});
+				}
+				
 				// 增加流水记录
+				const historySet = getCollection('history');
 				const data = {
 					team_id: this.team._id,
 					from: this.openid,
@@ -85,24 +100,17 @@
 					add: this.add,
 					date: new Date()
 				}
-				const historySet = getCollection('history');
-				const prom2 = historySet.add({ data });
+				const prom3 = historySet.add({ data });
 				
-				Promise.all([prom1, prom2]).then(([res]) => {
-					uni.$emit('rank-detail-reload');
-					uni.showToast({
-						title: this.desc + '成功',
-						success() {
-							uni.navigateBack({});
-						}
-					});
+				Promise.all([prom1, prom2, prom3]).then(() => {
+					uni.navigateBack({});
 				}).catch(e => {
-					console.warn('失败：' + e.message);
+					console.warn('赠送失败：' + e.message); 
 				})
 			},
 			
 			onClickBtn() {
-				const content = `确定${this.desc+this.to.nickname}朵小红花?`;
+				const content = `确定${this.desc+this.to.nickname + this.number}朵小红花?`;
 				uni.showModal({
 					content,
 					success: res => {
@@ -110,7 +118,7 @@
 							this.give();
 						}
 					}
-				})
+				});
 			}
 		}
 	}

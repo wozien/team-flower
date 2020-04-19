@@ -41,10 +41,10 @@
 			</view>
 			
 			<view class="footer" slot="footer">
-				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close"
-				 style="margin-right: 16px;" @click.native="updateFlower(false)">扣除</tf-button>
-				<tf-button v-if="isSelf" :width="125" size="small" icon="update">修改昵称</tf-button>
-				<tf-button v-else :width="125" size="small" icon="aixin" type="assia" @click.native="updateFlower(true)">感谢</tf-button>
+				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close" type="primary"
+				 style="margin-right: 16px;" @click="updateFlower(false)">扣除</tf-button>
+				<tf-button v-if="isSelf" :width="125" size="small" icon="update" @click="rename" type="primary">修改昵称</tf-button>
+				<tf-button v-else :width="125" size="small" icon="aixin" type="assia" @click="updateFlower(true)">感谢</tf-button>
 			</view>
 		</tf-layout>
 	</view>
@@ -63,8 +63,7 @@
 		data() {
 			return {
 				history: [],
-				member: {},
-				to: ''
+				member: {}
 			}
 		},
 		
@@ -79,26 +78,36 @@
 		},
 		
 		created() {
-			uni.$on('rank-detail-reload', this.load);
+			uni.$on('rename', (name) => {
+				this.member.nickname = name;
+			});
 		},
 		
 		onLoad({detail_id}) {
-			this.to = detail_id;
+			this.detail_id = detail_id;
 			this.member = this.team.members.find(mb => mb.openid === detail_id);
-			this.load();
+			this.loadHistory();
+		},
+		
+		onShow() {
+			this.loadHistory();
+		},
+		
+		onPullDownRefresh() {
+			this.loadHistory().then(() => {
+				uni.stopPullDownRefresh();
+			});
 		},
 		
 		methods: {
-			load() {
-				// 获取流水记录
-				const historySet = getCollection('history');
-				historySet.where({
+			loadHistory() {
+				// 获取流水记录 TODO 分页处理
+				const historyCollection = getCollection('history');
+				return historyCollection.where({
 					team_id: this.team._id,
-					to: this.to
+					to: this.detail_id
 				}).get().then(res => {
-					if(res.errMsg === 'collection.get:ok') {
-						this.formatHistory(res.data)
-					}
+					this.formatHistory(res.data);
 				})
 			},
 			
@@ -119,6 +128,7 @@
 				const today = (new Date()).getDate();
 				if(today - day < 7) {
 					year = this.formatWeek(date);
+					year = today - day === 0 ? '今天' : year;
 				} 
 				day = this.padZero(day);
 				
@@ -138,7 +148,7 @@
 			},
 			
 			updateFlower(add) {
-				const data = {
+				const info = {
 					add,
 					to: {
 						openid: this.member.openid,
@@ -146,8 +156,14 @@
 					}
 				}
 				uni.navigateTo({
-					url:"./give?item=" + encodeURIComponent(JSON.stringify(data))
-				})
+					url:"../give/give?info=" + JSON.stringify(info)
+				});
+			},
+			
+			rename() {
+				uni.navigateTo({
+					url: '../rename/rename'
+				});
 			}
 		}
 	}
@@ -236,9 +252,9 @@
 					.number {
 						font-size: 36rpx;
 						font-weight: bold;
-						color: #FF6600;
+						color: #1AAD19;
 						&.number-add {
-							color: #1AAD19;
+							color: #FF6600;
 						}
 					}
 					.message {

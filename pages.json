@@ -9,24 +9,22 @@
 		{
 			"path": "pages/create/create",
 			"style": {
+				"disableScroll": true,
 				"navigationBarBackgroundColor":"#f8f8f8",
-				"backgroundColor":"#f8f8f8",
-				"navigationBarTextStyle":"black",
-				"navigationBarTitleText":"创建团队"
+				"navigationBarTextStyle":"black"
 			}
 		},
 		{
 			"path": "pages/create/create-success",
 			"style":{
-				"navigationBarBackgroundColor":"#f8f8f8",
-				"backgroundColor":"#f8f8f8"
+				"disableScroll": true,
+				"navigationBarBackgroundColor":"#f8f8f8"
 			}
 		},
 		{
-			"path": "pages/create/invite",
+			"path": "pages/invite/invite",
 			"style":{
 				"navigationBarBackgroundColor":"#f8f8f8",
-				"backgroundColor":"#f8f8f8",
 				"disableScroll": true
 			}
 		},
@@ -34,22 +32,28 @@
 			"path":"pages/rank/rank",
 			"style":{
 				"navigationStyle": "custom",
-				"disableScroll":true
+				"enablePullDownRefresh": true
 			}
 		},
 		{
 			"path": "pages/rank/detail",
 			"style":{
-				"disableScroll": true
+				"enablePullDownRefresh": true
 			}
 		},
 		{
-			"path":"pages/rank/give",
+			"path":"pages/give/give",
 			"style":{
 				"disableScroll":true
 			}
+		},
+		{
+			"path" : "pages/rename/rename",
+			"style" : {
+				"disableScroll": true
+			}
 		}
-	],
+    ],
 	"globalStyle": {
 		"navigationBarBackgroundColor": "#7F83BB",
 		"backgroundColor":"#7F83BB"
@@ -64,8 +68,8 @@
 				// }
 				{
 					"name": "my", //模式名称
-					"path": "pages/create/create-success",
-					"query": "info={\"team_id\":\"1d1104975e987fce004b86801d71e32b\",\"team_name\":\"浪潮inSuite\",\"master\":\"James💤\"}"
+					"path": "pages/invite/invite",
+					"query": "info={\"team_id\":\"1d1104975e9b1d9f0074bea92c419de1\",\"team_name\":\"1234\",\"master\":\"James💤\"}"
 				}
 	    ]
 	}
