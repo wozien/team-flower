@@ -32,6 +32,7 @@
 			"path":"pages/rank/rank",
 			"style":{
 				"navigationStyle": "custom",
+				"backgroundColor":"#7F83BB",
 				"enablePullDownRefresh": true
 			}
 		},
@@ -49,6 +50,12 @@
 		},
 		{
 			"path" : "pages/rename/rename",
+			"style" : {
+				"disableScroll": true
+			}
+		},
+		{
+			"path" : "pages/quota/quota",
 			"style" : {
 				"disableScroll": true
 			}

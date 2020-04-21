@@ -132,7 +132,6 @@
 		overflow: hidden;
 		>view {
 			background-color: #f1f1f1;
-			padding: 10px;
 			border-radius: 4px;
 			&.number {
 				padding: 10px;

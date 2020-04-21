@@ -51,11 +51,11 @@
 		<!-- 侧栏 -->
 		<uni-drawer :visible="visible" @close="visible=false" class="drawer">
 			<view class="profile" :style="{ marginTop: statusBarHeight + 'px' }">
-				<tf-avatar :url="userInfo.avatarUrl" class="avatar" />
+				<tf-avatar :url="my.avatar" class="avatar" />
 				<view class="name-and-quota">
-					<text class="name">{{ userInfo.nickName }}</text>
+					<text class="name">{{ my.nickname }}</text>
 					<view class="quota">
-						小红花余额: <text>{{ isMaster ? 999 +'+' : my.quota }}</text>
+						小红花余额: <text>{{ isMaster ? 9999 +'+' : my.quota }}</text>
 					</view>
 				</view>
 			</view>
@@ -64,14 +64,14 @@
 				<view class="team-list">
 					<view class="team-list-item"
 						:class="{'current': item.id === team._id}"
-						v-for="item in teams"
+						v-for="(item, index) in teams"
 						:key="item.id"
-						@click="switchTeam(item.id)">
+						@click="switchTeam(item.id, index)">
 						{{ item.name }}
 					</view>
 				</view>
 			</scroll-view>
-			<tf-button v-if="isMaster" type="primary" :width="140" size="small">设置小红花额度</tf-button>
+			<tf-button v-if="isMaster" type="primary" :width="140" size="small" @click="setQuota">设置小红花额度</tf-button>
 			<tf-button :width="140" size="small" @click="createTeam">创建新团队</tf-button>
 		</uni-drawer>
 		
@@ -106,21 +106,19 @@
 		
 		computed:{
 			members() {
-				console.log(this.team.members)
 				return this.team.members || [];
 			},
 			isMaster() {
-				// return this.team.master_id === this.openid;
-				return true;
+				return this.team.master_id === this.openid;
 			},
 			teamsScrollHeight() {
 				let res = systemInfo.screenHeight - 190 -statusBarHeight;
 				if(!this.isMaster) {
-					res += 60;
+					res += 46;
 				}
 				return res;
 			},
-			...mapState(['team', 'openid', 'userInfo'])
+			...mapState(['team', 'openid'])
 		},
 		
 		onLoad({team_id}) {
@@ -181,14 +179,39 @@
 				});
 			},
 			
-			switchTeam(team_id) {
-				console.log(team_id)
+			switchTeam(team_id, index) {
+				this.team_id = team_id;
+				// 存储当前团队id
+				uni.setStorageSync('TEAM_ID', team_id);
+				this.loadTeam().then(() => {
+					this.visible = false;
+					const data = this.teams.splice(index, 1);
+					this.teams.unshift(data[0]);
+				});
 			},
 			
 			createTeam() {
 				uni.navigateTo({
-					url: '../index/index?is_create=1'
+					url: '../index/index?is_create=1',
+					success: () => {
+						this.hideDrawer();
+					}
 				});
+			},
+			
+			setQuota() {
+				uni.navigateTo({
+					url: '../quota/quota?team_id=' + this.team._id,
+					success: () => {
+						this.hideDrawer();
+					}
+				});
+			},
+			
+			hideDrawer() {
+				setTimeout(() => {
+					this.visible = false;
+				}, 1000);
 			},
 			
 			...mapMutations({
@@ -375,9 +398,31 @@
 					border: 1px solid #eee;
 					color: #666;
 					margin-bottom: 10px;
+					position: relative;
 					&.current {
 						color: $color-primary;
 						border-color: $color-primary;
+						&::before {
+							content: "";
+							display: block;
+							position: absolute;
+							width: 12px;
+							height: 10px;
+							top: 0px;
+							right: 18px;
+							background-color: $color-primary;
+						}
+						&::after {
+							content: "";
+							display: block;
+							position: absolute;
+							width: 0px;
+							height: 0px;
+							top: 10px;
+							right: 18px;
+							border: 6px solid transparent;
+							border-top-color: $color-primary;
+						}
 					}
 				}
 			}
