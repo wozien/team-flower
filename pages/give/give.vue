@@ -19,6 +19,7 @@
 <script>
 	import { mapState } from 'vuex';
 	import { getCollection, command as _ } from '../../common/js/db.js';
+	import { version } from '@/common/js/config.js';
 	
 	export default {
 		data() {
@@ -98,11 +99,29 @@
 					number: this.number,
 					message: this.message,
 					add: this.add,
-					date: new Date()
+					date: new Date(),
+					version: version
 				}
 				const prom3 = historySet.add({ data });
 				
 				Promise.all([prom1, prom2, prom3]).then(() => {
+					// 订阅消息推送
+					wx.cloud.callFunction({
+						name: 'notification',
+						data: {
+							type: this.add ? 'give': 'deduct',
+							params: {
+								team_id: this.team._id,
+								team_name: this.team.name,
+								touser: this.to.openid,
+								sender: my.nickname,
+								number: +this.number,
+								reason: this.message
+							}
+						}
+					}).then(res => {
+						console.log(res)
+					});
 					uni.navigateBack({});
 				}).catch(e => {
 					console.warn('赠送失败：' + e.message); 

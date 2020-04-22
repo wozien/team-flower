@@ -4,7 +4,7 @@
 			<image src="../../static/img/invite.png"></image>
 			<text class="text">Hi, 你来了~</text>
 			<text class="text">{{ master }} 邀请你加入 {{ team_name }} 团队</text>
-			<button class="join-btn" open-type="getUserInfo" @getuserinfo="join">立即加入</button>
+			<button class="join-btn" open-type="getUserInfo" @click="subscribe" @getuserinfo="join">立即加入</button>
 			<text class="create-my" @click="createTeam">我要创建自己的团队</text>
 		</view>
 	</view>
@@ -14,6 +14,9 @@
 	import { mapState, mapActions, mapMutations } from 'vuex';
 	import { getCollection, getTeam, command as _ } from '../../common/js/db.js';
 	import Team from '../../common/js/Team.js';
+	
+	let subscribeResolve;
+	let subscribeProm = new Promise((resolve) => subscribeResolve = resolve);
 	
 	export default {
 		data() {
@@ -79,11 +82,24 @@
 							});
 						}
 					}).then(() => {
+						// 订阅消息操作后才能跳转
+						return subscribeProm;
+					}).then(() => {
 						uni.redirectTo({
 							url: '../rank/rank?team_id=' + this.team_id
 						});
-					});	
+					})
 				}
+			},
+			
+			// 订阅消息
+			subscribe() {
+				wx.requestSubscribeMessage({
+					tmplIds: ['VuohxXh57VvHSkihzpk94WtkpuLiRL3XJFXXhttd6Sw', 'ct4NV_LQ7AhLpkulV-feI7AOFHnxgZJuI-X8a2aVlF8'],
+					complete(){
+						subscribeResolve();
+					}
+				});
 			},
 			
 			...mapMutations({

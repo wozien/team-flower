@@ -7,6 +7,7 @@
 		</view>
 		<button class="btn" 
 			open-type="getUserInfo"
+			@click="subscribe"
 		  @getuserinfo="onGetUserInfo"
 		>立即创建团队</button>
 	</view>
@@ -15,6 +16,9 @@
 <script>
 	import { mapState, mapActions, mapMutations } from 'vuex';
 	import { getMyTeams } from '@/common/js/db.js';
+	
+	let subscribeResolve;
+	let subscribeProm = new Promise((resolve) => subscribeResolve = resolve);
 	
 	export default {	
 		computed: {
@@ -26,6 +30,7 @@
 			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
+					console.log(res.authSetting)
 					if(res.authSetting['scope.userInfo']) {
 						uni.getUserInfo({
 							success: res => {
@@ -54,7 +59,7 @@
 		},
 		
 		methods: {
-			onGetUserInfo(e) {
+			onGetUserInfo(e) {		
 				// 授权成功
 				if(e.detail) {
 					this.setUserInfo(e.detail.userInfo);
@@ -64,12 +69,22 @@
 						prom = this.login();	
 					}
 					
-					prom.then(() => {
+					Promise.all([prom, subscribeProm]).then(() => {
 						uni.navigateTo({
 							url: '../create/create'
 						})
-					})
+					});
 				}
+			},
+			
+			// 订阅消息
+			subscribe() {
+				wx.requestSubscribeMessage({
+					tmplIds: ['VuohxXh57VvHSkihzpk94WtkpuLiRL3XJFXXhttd6Sw', 'ct4NV_LQ7AhLpkulV-feI7AOFHnxgZJuI-X8a2aVlF8'],
+					complete(){
+						subscribeResolve();
+					}
+				});
 			},
 			
 			...mapMutations({

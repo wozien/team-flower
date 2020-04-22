@@ -9,6 +9,7 @@
 <script>
 	import { mapState } from 'vuex';
 	import { getCollection } from '@/common/js/db.js';
+	import { version } from '@/common/js/config.js';
 	import Team from '@/common/js/Team.js';
 	
 	export default {
@@ -36,7 +37,7 @@
 
 					const teamCollection = getCollection('team');
 					const teamData = new Team(this.name, this.openid, this.userInfo);
-					
+					teamData.version = version;
 					teamCollection.add({
 						data: teamData
 					}).then(res => {
