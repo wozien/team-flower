@@ -63,12 +63,7 @@
 		
 		methods:{
 			reachBottom() {
-				console.log('on reach');
 				this.$emit('scroll-lower');
-			},
-			
-			onReachBottom() {
-				console.log('dasdas')
 			}
 		}
 	}

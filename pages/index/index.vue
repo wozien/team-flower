@@ -44,18 +44,28 @@
 		
 		onShow() {
 			if(this.isCreate) return;
+			
 			// 登录成功查询我的团队数据
-			if(this.openid) {
-				getMyTeams(this.openid).then(res => {
-					if(res.length) {
-						// 跳转rank页面
-						const team_id = uni.getStorageSync('TEAM_ID') || res[0].id;
-						uni.navigateTo({
-							url: '../rank/rank?team_id=' + team_id
-						});
-					}
-				})
-			} 
+			let prom;
+			if(!this.openid){
+				prom = this.login();	
+			} else {
+				prom = Promise.resolve(this.openid)
+			}
+			
+			prom.then(openid => {
+				if(openid) {
+					getMyTeams(openid).then(res => {
+						if(res.length) {
+							// 跳转rank页面
+							const team_id = uni.getStorageSync('TEAM_ID') || res[0].id;
+							uni.navigateTo({
+								url: '../rank/rank?team_id=' + team_id
+							});
+						}
+					})
+				}
+			});
 		},
 		
 		methods: {

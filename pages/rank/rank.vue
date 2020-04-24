@@ -9,7 +9,7 @@
 			<tf-layout :height="contentHeight" :show-footer="isMaster">
 				<view slot="header" class="header">
 					<view class="info">
-						<tf-avatar :url="my.avatar" class="avatar"></tf-avatar>
+						<tf-avatar :url="my.avatar" class="avatar" @click.native="toDetail(my.openid)"></tf-avatar>
 						<view class="name-and-rank" @click="toDetail(my.openid)">
 							<text class="name">{{ my.nickname }}</text>
 							<text class="rank">第 {{ my.order || '' }} 名</text>
@@ -20,7 +20,7 @@
 						</view>
 					</view>
 					<view class="search">
-						<input type="text" placeholder="搜索" placeholder-style="color: #cccccc"/>
+						<input type="text" placeholder="搜索" v-model="query" placeholder-style="color: #cccccc"/>
 						<view class="search-icon">
 							<tf-icon icon="search" :size="22"></tf-icon>
 						</view>
@@ -29,17 +29,17 @@
 				<view class="list">
 					<view 
 						class="list-item"
-						:class="{'list-item-first': member.order === 1}"
+						:class="{'list-item-first': index === 0}"
 						v-for="(member,index) in members" 
 						:key="member.key"
 						@click="toDetail(member.openid)">
 						<view class="order">
-							<image v-if="index < 3" :src="`../../static/img/no${member.order}.png`"></image>
+							<image v-if="member.order < 4" :src="`../../static/img/no${member.order}.png`"></image>
 							<text v-else>{{ member.order }}</text>
 						</view>
 						<tf-avatar class="avatar" :url="member.avatar"></tf-avatar>
 						<text class="name">{{ member.nickname }}</text>
-						<text class="number" :class="{'hlight': index < 3}">{{ member.flowers }}</text>
+						<text class="number" :class="{'hlight': member.order < 4}">{{ member.flowers }}</text>
 					</view>
 				</view>
 				<view slot="footer" class="footer">
@@ -100,13 +100,18 @@
 				teams: [],
 				visible: false,
 				statusBarHeight: statusBarHeight,
-				contentHeight: contentHeight
+				contentHeight: contentHeight,
+				query: ''
 			}
 		},
 		
 		computed:{
 			members() {
-				return this.team.members || [];
+				let res = this.team.members || [];
+				if(this.query) {
+					res = res.filter(mb => mb.nickname.indexOf(this.query) > -1);
+				}
+				return res;
 			},
 			isMaster() {
 				return this.team.master_id === this.openid;
