@@ -40,10 +40,23 @@
 					});
 					return;
 				}
+				
+				const content = '该项设置将会重置团队所有成员额度，是否继续？';
+				uni.showModal({
+					content,
+					success: res => {
+						if(res.confirm) {
+							this.exec();
+						}
+					}
+				});
+			},
+			
+			exec() {
 				wx.cloud.callFunction({
 					name: 'team',
 					data: {
-						type: 'update_quota',
+						type: 'reset_quota',
 						params: {
 							team_id: this.team_id,
 							quota: this.quota
@@ -51,7 +64,7 @@
 					}
 				}).then(() => {
 					uni.navigateBack({});
-				});
+				})
 			}
 		}
 	}

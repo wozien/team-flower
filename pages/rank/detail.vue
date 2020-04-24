@@ -1,6 +1,6 @@
 <template>
 	<view class="rank-detail">
-		<tf-layout :mg-top="60">
+		<tf-layout :mg-top="60" @scroll-lower="toScrollLower">
 			<view class="member" slot="header">
 				<tf-avatar :url="member.avatar" class="avatar" size="large"></tf-avatar>
 				<view class="name-and-rank">
@@ -52,8 +52,8 @@
 
 <script>
 	import TfLayout from '@/components/tf/tf-layout.vue';
-	import { mapState } from 'vuex';
-	import { getCollection } from '../../common/js/db.js';
+	import { mapState, mapMutations} from 'vuex';
+	import { getTeam } from '../../common/js/db.js';
 	
 	export default {
 		components:{
@@ -63,7 +63,8 @@
 		data() {
 			return {
 				history: [],
-				member: {}
+				member: {},
+				detail_id:''
 			}
 		},
 		
@@ -81,20 +82,29 @@
 			uni.$on('rename', (name) => {
 				this.member.nickname = name;
 			});
+			uni.$on('inc-flower', inc => {
+				this.member.flowers += inc;
+			});
 		},
 		
 		onLoad({detail_id}) {
 			this.detail_id = detail_id;
 			this.member = this.team.members.find(mb => mb.openid === detail_id);
-			this.loadHistory();
+			this.scrollTimer = null;   // 防抖处理
 		},
 		
 		onShow() {
+			this.skip = 0;
 			this.loadHistory();
 		},
 		
 		onPullDownRefresh() {
-			this.loadHistory().then(() => {
+			this.skip = 0;
+			let prom1 = this.loadHistory();
+			let prom2 = getTeam(this.team._id).then(res => {
+				this.calcOrder(res.data);
+			});
+			Promise.all([prom1, prom2]).then(() => {
 				uni.stopPullDownRefresh();
 			});
 		},
@@ -102,13 +112,32 @@
 		methods: {
 			loadHistory() {
 				// 获取流水记录 TODO 分页处理
-				const historyCollection = getCollection('history');
-				return historyCollection.where({
-					team_id: this.team._id,
-					to: this.detail_id
-				}).get().then(res => {
-					this.formatHistory(res.data);
-				})
+				return wx.cloud.callFunction({
+					name: 'history',
+					data: {
+						type: 'get_list',
+						params: {
+							team_id: this.team._id,
+							to: this.detail_id,
+							skip: this.skip || 0
+						}
+					}
+				}).then(({ result }) => {
+					if(this.skip === 0) this.history = [];
+					this.formatHistory(result.data || []);
+				});
+			},
+			
+			calcOrder(team) {
+				const {members} = team;
+				members.sort((a,b) => b.flowers - a.flowers);
+				members.forEach((member, index) => {
+					member.order = index + 1;
+					member.flowers = +member.flowers;
+					member.key = member.openid + member.order;        // 这里需要重新计算列表渲染的key
+				});
+				this.member = members.find(mb => mb.openid === this.detail_id);
+				this.setTeam(team);
 			},
 			
 			padZero(num) {
@@ -136,15 +165,21 @@
 			},
 			
 			formatHistory(data) {
-				data.sort((a,b) => b.date.getTime() - a.date.getTime());
 				data.forEach(item => {
 					item.from = this.team.members.find(mb => mb.openid === item.from);
-					item.date = this.formatDate(item.date);
+					item.date = this.formatDate(new Date(item.date));
 				})
-				if(data.length === 0) {
-					data.push({last: true})
+				
+				if(data.length) {
+					this.skip += data.length;
+					this.history = this.history.concat(data);
 				}
-				this.history = data;
+				
+				const index = this.history.findIndex(item => item.last);
+				if(index < 0 && data.length < 10) {
+					// 没有多余数据
+					this.history.push({ last: true });
+				}
 			},
 			
 			updateFlower(add) {
@@ -164,7 +199,20 @@
 				uni.navigateTo({
 					url: '../rename/rename'
 				});
-			}
+			},
+			
+			toScrollLower() {
+				if(this.scrollTimer) clearTimeout(this.scrollTimer);
+				this.scrollTimer = setTimeout(() => {
+					const index = this.history.findIndex(item => item.last);
+					if(index > -1) return;
+					this.loadHistory();
+				}, 600);
+			},
+			
+			...mapMutations({
+				setTeam: 'SET_TEAM'
+			})
 		}
 	}
 </script>

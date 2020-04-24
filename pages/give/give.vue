@@ -54,38 +54,54 @@
 				const members = this.team.members.slice(0);
 				const my = members.find(mb => mb.openid === this.openid);
 				const isMaster = this.team.master_id === this.openid;
+				const number = +this.number;
+				let errorMsg;
 				
-				if(!isMaster && my.quota < this.number) {
+				if(number <= 0) {
+					errorMsg = '请输入大于0的红花数量';
+				} else if(!this.add && !this.message) {
+					errorMsg = '请输入扣除原因';
+				} else if(!isMaster && my.quota < number) {
+					errorMsg = '您的小红花额度不足哦~';
+				}
+				
+				if(errorMsg) {
 					// 花额度不够
 					uni.showToast({
-						title: '您的小红花额度不足哦~',
+						title: errorMsg,
 						icon: "none"
 					});
 					return;
 				}
 				
+				const message = this.message || '感谢你的辛勤付出~';
 				
-				const teamCollection = getCollection('team');
 				// 修改被赠者花的数量
 				const inc = this.add ? +this.number : -this.number;
-				const prom1 = teamCollection.where({
-					_id: this.team._id,
-					'members.openid': this.to.openid
-				}).update({
+				const prom1 = wx.cloud.callFunction({
+					name: 'team',
 					data: {
-						'members.$.flowers': _.inc(inc)
+						type: 'update_flowers',
+						params: {
+							team_id: this.team._id,
+							openid: this.to.openid,
+							inc
+						}
 					}
 				});
 				
 				// 修改赠送者的积分
 				let prom2 = Promise.resolve();
 				if(!isMaster && this.add) {
-					prom2 = teamCollection.where({
-						_id: this.team._id,
-						'members.openid': this.openid
-					}).update({
+					prom2 = wx.cloud.callFunction({
+						name: 'team',
 						data: {
-							'members.$.quota': _.inc(-inc)
+							type: 'update_quota',
+							params: {
+								team_id: this.team._id,
+								openid: this.openid,
+								inc: -inc
+							}
 						}
 					});
 				}
@@ -96,8 +112,8 @@
 					team_id: this.team._id,
 					from: this.openid,
 					to: this.to.openid,
-					number: this.number,
-					message: this.message,
+					number,
+					message,
 					add: this.add,
 					date: new Date(),
 					version: version
@@ -115,13 +131,12 @@
 								team_name: this.team.name,
 								touser: this.to.openid,
 								sender: my.nickname,
-								number: +this.number,
-								reason: this.message
+								number,
+								reason: message
 							}
 						}
-					}).then(res => {
-						console.log(res)
 					});
+					uni.$emit('inc-flower', inc);
 					uni.navigateBack({});
 				}).catch(e => {
 					console.warn('赠送失败：' + e.message); 

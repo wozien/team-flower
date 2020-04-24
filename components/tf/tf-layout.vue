@@ -7,7 +7,12 @@
 			<view class="header" :style="{flexBasis: mgTop + 40 + 'px'}">
 				<slot name="header"></slot>
 			</view>
-			<scroll-view class="scroll" scroll-y="true" :style="{height: scrollHeight + 'px'}">
+			<scroll-view 
+			  class="scroll" 
+				scroll-y="true" 
+				:style="{height: scrollHeight + 'px'}" 
+				:lower-threshold="20"
+				@scrolltolower="reachBottom">
 				<slot></slot>
 			</scroll-view>
 			<view class="footer" v-if="showFooter">
@@ -53,6 +58,17 @@
 					res = res - 70;
 				}
 				return res;
+			}
+		},
+		
+		methods:{
+			reachBottom() {
+				console.log('on reach');
+				this.$emit('scroll-lower');
+			},
+			
+			onReachBottom() {
+				console.log('dasdas')
 			}
 		}
 	}
