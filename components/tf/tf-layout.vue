@@ -9,7 +9,7 @@
 			</view>
 			<scroll-view 
 			  class="scroll" 
-				scroll-y="true" 
+				:scroll-y="true" 
 				:style="{height: scrollHeight + 'px'}" 
 				:lower-threshold="20"
 				@scrolltolower="reachBottom">

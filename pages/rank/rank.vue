@@ -26,22 +26,9 @@
 						</view>
 					</view>
 				</view>
-				<view class="list">
-					<view 
-						class="list-item"
-						:class="{'list-item-first': index === 0}"
-						v-for="(member,index) in members" 
-						:key="member.key"
-						@click="toDetail(member.openid)">
-						<view class="order">
-							<image v-if="member.order < 4" :src="`../../static/img/no${member.order}.png`"></image>
-							<text v-else>{{ member.order }}</text>
-						</view>
-						<tf-avatar class="avatar" :url="member.avatar"></tf-avatar>
-						<text class="name">{{ member.nickname }}</text>
-						<text class="number" :class="{'hlight': member.order < 4}">{{ member.flowers }}</text>
-					</view>
-				</view>
+				<!-- 排名列表 -->
+				<tf-list :members="members"></tf-list>
+				
 				<view slot="footer" class="footer">
 					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
 				</view>
@@ -80,6 +67,7 @@
 
 <script>
 	import TfLayout from '@/components/tf/tf-layout.vue';
+	import TfList from '../../components/tf/tf-list.vue';
 	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
 	import { mapState, mapMutations } from 'vuex';
 	import { getTeam, getMyTeams } from '@/common/js/db.js';
@@ -91,6 +79,7 @@
 	export default {
 		components: {
 			TfLayout,
+			TfList,
 			uniDrawer
 		},
 		
@@ -311,44 +300,6 @@
 				}
 			}
 			
-			.list {
-				.list-item {
-					height: 75px;
-					display: flex;
-					align-items: center;
-					border-top: 1px solid #eee;
-					margin: 0px 30px 0px 15px;
-					&.list-item-first { border-top: none}
-					.order{
-						flex: 0 0 50px;
-						text-align: center;
-						> image {
-							height: 30px;
-							width: 30px;
-						}
-						>text{
-							font-weight: 600;
-						}
-					}
-					.avatar {
-						flex: 0 0 auto;
-						margin-right: 10px;
-					}
-					.number {
-						flex: 0 0 auto;
-						color: #1aad19;
-						font-weight: 600;
-						font-size: 36rpx;
-						&.hlight {
-							color: #ff6600
-						}
-					}
-					.name {
-						flex: 1;
-						color: #666;
-					}
-				}
-			}
 			.footer{
 				padding-top: 6px;
 			}
