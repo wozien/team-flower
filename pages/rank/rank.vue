@@ -27,7 +27,7 @@
 					</view>
 				</view>
 				<!-- 排名列表 -->
-				<tf-list :members="members"></tf-list>
+				<tf-list :members="members" :is-master="isMaster"></tf-list>
 				
 				<view slot="footer" class="footer">
 					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
