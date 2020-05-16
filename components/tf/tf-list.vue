@@ -4,6 +4,7 @@
 			v-for="(item, index) in listData"
 			:key="item.key"
 			:class="['list-item', {'list-item-first': !index}]"
+			@click="toDetail(item.openid)"
 		>
 			<movable-area class="movable-area">
 				<movable-view 
@@ -27,8 +28,8 @@
 						<text class="number" :class="{'hlight': item.order < 4}">{{ item.flowers }}</text>
 					</view>
 					
-					<view class="list-item-del">
-						<text>移除</text>
+					<view class="list-item-del" @click.stop="delItem(item)">
+						<text class="iconfont icontrash"></text>
 					</view>
 				</movable-view>
 			</movable-area>
@@ -37,6 +38,8 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex';
+	
 	export default {
 		name: 'TfList',
 	
@@ -52,6 +55,10 @@
 			return {
 				listData: []
 			}
+		},
+		
+		computed: {
+			...mapState(['team', 'openid'])
 		},
 		
 		created() {
@@ -133,6 +140,49 @@
 					item.xmove = x;
 					this.listData.splice(index, 1, item);
 				}
+			},
+			
+			delItem(item) {
+				const content = `确定移除成员${item.nickname}吗?`;
+				uni.showModal({
+					content,
+					success: res => {
+						if(res.confirm) {
+							this.removeMember(item.openid)
+						}
+					}
+				});
+			},
+			
+			removeMember(openid) {
+				// console.log(openid);
+				if(this.openid === openid) {
+					uni.showToast({
+						title: '无法移除自己',
+						icon: 'none'
+					});
+					return;
+				}
+				// 订阅消息推送
+				wx.cloud.callFunction({
+					name: 'team',
+					data: {
+						type: 'remove_member',
+						params: {
+							team_id: this.team._id,
+							openid
+						}
+					}
+				}).then(res => {
+					uni.showToast({
+						title: '移除成功',
+						icon: 'none'
+					});
+					const index = this.listData.findIndex(item => item.openid === openid);
+					if(index > -1) {
+						this.listData.splice(index, 1);
+					}
+				});
 			}
 		}
 	}
@@ -199,6 +249,11 @@
 					height: 150rpx;
 					background-color: #ed4014;
 					color: #fff;
+					line-height: 150rpx;
+					text-align: center;
+					> text {
+						font-size: 40rpx;
+					}
 				}
 			}
 		}
