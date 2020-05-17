@@ -137,10 +137,18 @@
 						}
 					});
 					uni.$emit('inc-flower', inc);
-					uni.navigateBack({});
+					uni.showToast({
+						title: this.desc + '成功',
+						icon: "success",
+						success() {
+							setTimeout(() => {
+								uni.navigateBack({});
+							}, 1000);
+						}
+					});
 				}).catch(e => {
 					console.warn('赠送失败：' + e.message); 
-				})
+				});
 			},
 			
 			onClickBtn() {

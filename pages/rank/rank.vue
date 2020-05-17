@@ -87,6 +87,7 @@
 			return {
 				my: {},
 				teams: [],
+				team_id: '',
 				visible: false,
 				statusBarHeight: statusBarHeight,
 				contentHeight: contentHeight,
@@ -115,14 +116,33 @@
 			...mapState(['team', 'openid'])
 		},
 		
+		watch: {
+			team_id(val) {
+				// 存储当前团队id
+				uni.setStorageSync('TEAM_ID', val);
+			}
+		},
+		
 		onLoad({team_id}) {
 			this.team_id = team_id;
-			// 存储当前团队id
-			uni.setStorageSync('TEAM_ID', team_id);
 		},
 		
 		onShow() {
-			this.loadTeam();
+			getMyTeams(this.openid).then(res => {
+				this.teams = res || [];
+				if(this.teams.length) {
+					// 在被移除团队后默认显示我的团队列表第一个
+					const index = this.teams.findIndex(team => team.id === this.team_id);
+					if(!this.team_id || index < 0) {
+						this.team_id = this.teams[0].id;
+					}
+					this.loadTeam();
+				} else {
+					uni.redirectTo({
+						url: '../index/index?is_create=1'
+					});
+				}
+			});
 		},
 		
 		onShareAppMessage() {
@@ -139,20 +159,18 @@
 		},
 		
 		onPullDownRefresh() {
-			this.loadTeam().then(() => {
+			const p1 = getMyTeams(this.openid).then(res => { this.teams = res });
+			const p2 = this.loadTeam();
+			Promise.all([p1, p2]).then(() => {
 				uni.stopPullDownRefresh();
 			});
 		},
 		
 		methods: {
 			loadTeam() {
-				// 请求我的团队
-				let prom1 = getMyTeams(this.openid).then(res => this.teams = res);
-				// 加入团队详情
-				let prom2 = getTeam(this.team_id).then(res => {
+				return getTeam(this.team_id).then(res => {
 					this.calcOrder(res.data);
 				});
-				return Promise.all([prom1, prom2]);
 			},
 			
 			calcOrder(team) {
@@ -176,8 +194,6 @@
 			
 			switchTeam(team_id, index) {
 				this.team_id = team_id;
-				// 存储当前团队id
-				uni.setStorageSync('TEAM_ID', team_id);
 				this.loadTeam().then(() => {
 					this.visible = false;
 					const data = this.teams.splice(index, 1);

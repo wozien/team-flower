@@ -32,7 +32,6 @@
 			"path":"pages/rank/rank",
 			"style":{
 				"navigationStyle": "custom",
-				"backgroundColor":"#7F83BB",
 				"enablePullDownRefresh": true
 			}
 		},

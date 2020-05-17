@@ -63,8 +63,17 @@
 						}
 					}
 				}).then(() => {
-					uni.navigateBack({});
-				})
+					uni.showToast({
+						title: "修改额度成功",
+						icon: 'success',
+						success() {
+							setTimeout(() => {
+								uni.navigateBack({});
+							}, 1000);
+						}
+					});
+					
+				});
 			}
 		}
 	}

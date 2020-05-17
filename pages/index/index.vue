@@ -30,7 +30,6 @@
 			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
-					console.log(res.authSetting)
 					if(res.authSetting['scope.userInfo']) {
 						uni.getUserInfo({
 							success: res => {

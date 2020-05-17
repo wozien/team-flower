@@ -62,22 +62,24 @@
 		},
 		
 		created() {
-			this.listData = this.members.map(item => {
-				item.xmove = 0;
-				return item;
-			});
+			this.listData = this._calcListData(this.members);
 		},
 		
 		watch: {
 			members(val) {
-				this.listData = val.map(item => {
-					item.xmove = 0;
-					return item;
-				});
+				this.listData = this._calcListData(val);
 			}
 		},
 		
 		methods: {
+			_calcListData(arr) {
+				return arr.map((item, index) => {
+					item.xmove = 0;
+					item.key = item.key + index;
+					return item;
+				});
+			},
+			
 			toDetail(detail_id) {
 				uni.navigateTo({
 					url: '../../pages/rank/detail?detail_id=' + detail_id
@@ -86,7 +88,6 @@
 			
 			onTouchStart(e) {
 				const { index } = e.currentTarget.dataset;
-				console.log(index);
 				this.index = index;
 				this.startX = e.touches[0].clientX;
 				this.startY = e.touches[0].clientY;
@@ -103,26 +104,19 @@
 				if(!this.isMaster || Math.abs(angle) > 30) return;
 				
 				const delX = endX - this.startX;
-				if(delX < -1) {
+				if(delX < -10) {
 					this.openMenu();
-				} else if (delX > 1){
+				} else if (delX > 10){
 				  this.hideMenu();
 				}
 			},
 			
 			openMenu() {
-				// const item = this.listData[this.index];
 				this.setXmove(-60);
-				// if(!item.xmove) {
-				// 	this.setXmove(-60);
-				// }
 			},
 			
 			hideMenu() {
-				// const item = this.listData[this.index];
-				// if(item.xmove) {
-					this.setXmove(0);
-				// }
+				this.setXmove(0);
 			},
 			
 			getAngle(start, end) {
@@ -163,7 +157,6 @@
 					});
 					return;
 				}
-				// 订阅消息推送
 				wx.cloud.callFunction({
 					name: 'team',
 					data: {

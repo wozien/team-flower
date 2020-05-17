@@ -129,7 +129,7 @@
 			},
 			
 			calcOrder(team) {
-				const {members} = team;
+				const members = team.members.filter(mb => mb);
 				members.sort((a,b) => b.flowers - a.flowers);
 				members.forEach((member, index) => {
 					member.order = index + 1;
@@ -137,6 +137,7 @@
 					member.key = member.openid + member.order;        // 这里需要重新计算列表渲染的key
 				});
 				this.member = members.find(mb => mb.openid === this.detail_id);
+				team.members = members;
 				this.setTeam(team);
 			},
 			
