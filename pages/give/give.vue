@@ -35,7 +35,7 @@
 			desc() {
 				return this.add ? '赠送' : '扣除';
 			},
-			...mapState(['openid', 'team'])
+			...mapState(['openid', 'team', 'userInfo'])
 		},
 		
 		onLoad({info}) {

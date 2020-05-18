@@ -20,7 +20,8 @@ class Team {
 			nickname: userInfo.nickName,
 			avatar: userInfo.avatarUrl,
 			flowers: 0,
-			quota: 100
+			quota: 100,
+			is_delete: 0
 		}
 	}
 }

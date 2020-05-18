@@ -64,24 +64,20 @@
 					prom.then(openid => {
 						if(!this.team_id) return Promise.reject('团队不存在');
 						
-						// 判断是否已经加入过该团队
-						return getTeam(this.team_id).then(res => {
-							const { members } = res.data;
-							return members.findIndex(mb => mb.openid === openid)
+						const member = Team.generateMember(this.openid, userInfo);
+						// 添加成员
+						return wx.cloud.callFunction({
+							name: 'team',
+							data: {
+								type: 'add_member',
+								params: {
+									team_id: this.team_id,
+									member
+								}
+							}
 						});
 					})
-					.then(index => {
-						if(index < 0) {
-							// 不在团队里面
-							const member = Team.generateMember(this.openid, userInfo);
-							const teamCollection = getCollection('team');
-							return teamCollection.doc(this.team_id).update({
-								data: {
-									members: _.push(member)
-								}
-							});
-						}
-					}).then(() => {
+					.then(() => {
 						// 订阅消息操作后才能跳转
 						return subscribeProm;
 					}).then(() => {

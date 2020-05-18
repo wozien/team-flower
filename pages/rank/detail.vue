@@ -129,7 +129,7 @@
 			},
 			
 			calcOrder(team) {
-				const members = team.members.filter(mb => mb);
+				const { members } = team;
 				members.sort((a,b) => b.flowers - a.flowers);
 				members.forEach((member, index) => {
 					member.order = index + 1;
@@ -137,7 +137,6 @@
 					member.key = member.openid + member.order;        // 这里需要重新计算列表渲染的key
 				});
 				this.member = members.find(mb => mb.openid === this.detail_id);
-				team.members = members;
 				this.setTeam(team);
 			},
 			
@@ -167,7 +166,10 @@
 			
 			formatHistory(data) {
 				data.forEach(item => {
-					item.from = this.team.members.find(mb => mb.openid === item.from);
+					const data = this.team.members.find(mb => mb.openid === item.from);
+					if(data) {
+						item.from = data;
+					}
 					item.date = this.formatDate(new Date(item.date));
 				})
 				
