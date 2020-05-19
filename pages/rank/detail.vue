@@ -102,7 +102,7 @@
 			this.skip = 0;
 			let prom1 = this.loadHistory();
 			let prom2 = getTeam(this.team._id).then(res => {
-				this.calcOrder(res.data);
+				this.setMember(res.data);
 			});
 			Promise.all([prom1, prom2]).then(() => {
 				uni.stopPullDownRefresh();
@@ -128,16 +128,16 @@
 				});
 			},
 			
-			calcOrder(team) {
-				const { members } = team;
+			setMember(team) {
+				const members  = team.members.filter(mb => mb.is_delete == 0);
 				members.sort((a,b) => b.flowers - a.flowers);
 				members.forEach((member, index) => {
 					member.order = index + 1;
 					member.flowers = +member.flowers;
 					member.key = member.openid + member.order;        // 这里需要重新计算列表渲染的key
-				});
+				})
 				this.member = members.find(mb => mb.openid === this.detail_id);
-				this.setTeam(team);
+				// this.setTeam(team);
 			},
 			
 			padZero(num) {

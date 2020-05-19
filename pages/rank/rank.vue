@@ -27,7 +27,7 @@
 					</view>
 				</view>
 				<!-- 排名列表 -->
-				<tf-list :members="members" :is-master="isMaster"></tf-list>
+				<tf-list :members="queryMembers" :is-master="isMaster"></tf-list>
 				
 				<view slot="footer" class="footer">
 					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
@@ -86,6 +86,7 @@
 		data() {
 			return {
 				my: {},
+				members: [],
 				teams: [],
 				team_id: '',
 				visible: false,
@@ -96,11 +97,11 @@
 		},
 		
 		computed:{
-			members() {
-				let res = this.team.members || [];
+			queryMembers() {
+				let res = this.members;
 				if(this.query) {
 					res = res.filter(mb => mb.nickname.indexOf(this.query) > -1);
-				}
+				} 
 				return res;
 			},
 			isMaster() {
@@ -159,30 +160,43 @@
 		},
 		
 		onPullDownRefresh() {
-			const p1 = getMyTeams(this.openid).then(res => { this.teams = res });
-			const p2 = this.loadTeam();
-			Promise.all([p1, p2]).then(() => {
+			getMyTeams(this.openid).then(res => {
 				uni.stopPullDownRefresh();
+				this.teams = res || [];
+				if(this.teams.length) {
+					// 在被移除团队后默认显示我的团队列表第一个
+					const index = this.teams.findIndex(team => team.id === this.team_id);
+					if(!this.team_id || index < 0) {
+						this.team_id = this.teams[0].id;
+					}
+					this.loadTeam();
+				} else {
+					uni.redirectTo({
+						url: '../index/index?is_create=1'
+					});
+				}
 			});
 		},
 		
 		methods: {
 			loadTeam() {
 				return getTeam(this.team_id).then(res => {
-					this.calcOrder(res.data);
+					this.setMembers(res.data);
+					this.setTeam(res.data);
 				});
 			},
 			
-			calcOrder(team) {
-				const { members } = team;
+			// 计算排名
+			setMembers(team) {
+				const members  = team.members.filter(mb => mb.is_delete == 0);
 				members.sort((a,b) => b.flowers - a.flowers);
 				members.forEach((member, index) => {
 					member.order = index + 1;
 					member.flowers = +member.flowers;
 					member.key = member.openid + member.order;        // 这里需要重新计算列表渲染的key
 				})
+				this.members = members;
 				this.my = members.find(item => item.openid === this.openid)
-				this.setTeam(team);
 			},
 			
 			toDetail(detail_id) {

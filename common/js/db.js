@@ -20,9 +20,13 @@ export const getTeam = teamId => {
 export const getMyTeams = openid => {
 	const teamCollection = getCollection('team');
 	return teamCollection.where({
-		'members.openid': openid
+		members: {
+			openid,
+			is_delete: 0
+		}
 	}).get()
 		.then(({ data }) => {
+			console.log(data);
 			let res= [];
 			if(data.length) {
 				res = data.map(item => {
