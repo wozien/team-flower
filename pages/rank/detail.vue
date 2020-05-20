@@ -1,6 +1,6 @@
 <template>
 	<view class="rank-detail">
-		<tf-layout :mg-top="60" @scroll-lower="toScrollLower">
+		<tf-layout :mg-top="60" @scroll-lower="toScrollLower" :loading="loading">
 			<view class="member" slot="header">
 				<tf-avatar :url="member.avatar" class="avatar" size="large"></tf-avatar>
 				<view class="name-and-rank">
@@ -64,7 +64,8 @@
 			return {
 				history: [],
 				member: {},
-				detail_id:''
+				detail_id:'',
+				loading: true
 			}
 		},
 		
@@ -95,7 +96,8 @@
 		
 		onShow() {
 			this.skip = 0;
-			this.loadHistory();
+			this.loading = true;
+			this.loadHistory().then(() => this.loading = false);
 		},
 		
 		onPullDownRefresh() {

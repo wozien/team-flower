@@ -14,7 +14,7 @@
 				:lower-threshold="20"
 				@scrolltolower="reachBottom">
 				<slot></slot>
-				<tf-loading></tf-loading>
+				<tf-loading :loading="loading"></tf-loading>
 			</scroll-view>
 			<view class="footer" v-if="showFooter">
 				<slot name="footer"></slot>
@@ -36,12 +36,12 @@
 			showFooter: {
 				type: Boolean,
 				default: true
-			}
+			},
+			loading: Boolean
 		},
 		
 		data() {
 			return {
-				
 			};
 		},
 		

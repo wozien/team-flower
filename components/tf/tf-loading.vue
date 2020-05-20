@@ -1,13 +1,16 @@
 <template>
-	<div class="tf-loading">
-		<div></div>
-		<div></div>
-	</div>
+	<view class="tf-loading" v-show="loading">
+		<view></view>
+		<view></view>
+	</view>
 </template>
 
 <script>
 	export default {
-		name: 'TfLoading'
+		name: 'TfLoading',
+		props: {
+			loading: Boolean
+		}
 	}
 </script>
 
@@ -22,7 +25,7 @@
 	}
 	
 	.tf-loading {
-		> div {
+		> view {
 			position: absolute;
 			left: 0;
 			top: 0;
@@ -37,7 +40,7 @@
 			animation: loading 1.4s infinite ease-in;
 			z-index: 100;
 		}
-		> div:nth-child(2) {
+		> view:nth-child(2) {
 			animation-delay: -0.7s;
 		}
 	}
