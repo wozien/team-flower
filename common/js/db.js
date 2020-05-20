@@ -20,19 +20,20 @@ export const getTeam = teamId => {
 export const getMyTeams = openid => {
 	const teamCollection = getCollection('team');
 	return teamCollection.where({
-		members: {
-			openid,
-			is_delete: 0
-		}
+		'members.openid': openid,
 	}).get()
 		.then(({ data }) => {
-			console.log(data);
+			// 处理我在的团队
 			let res= [];
 			if(data.length) {
-				res = data.map(item => {
-					return {
-						id: item._id,
-						name: item.name
+				data.forEach(item => {
+					const { members } = item;
+					const index = members.findIndex(mb => mb.openid === openid && mb.is_delete == 0);
+					if(index > -1) {
+						res.push({
+							id: item._id,
+							name: item.name
+						});
 					}
 				});
 			}

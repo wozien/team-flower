@@ -12,7 +12,7 @@
 
 <script>
 	import { mapState, mapActions, mapMutations } from 'vuex';
-	import { getCollection, getTeam, command as _ } from '../../common/js/db.js';
+	import { getCollection, getTeam, command as _ , getMyTeams } from '../../common/js/db.js';
 	import Team from '../../common/js/Team.js';
 	
 	let subscribeResolve;
@@ -39,6 +39,17 @@
 		
 		onShow() {
 			uni.hideHomeButton();
+			// 判断是否在改团队里面
+			if(this.openid && this.team_id) {
+				getMyTeams(this.openid).then(res => {
+					const index = res.findIndex(item => item.id === this.team_id);
+					if(index > -1) {
+						uni.redirectTo({
+							url: '../rank/rank?team_id=' + this.team_id
+						});
+					}
+				});
+			}
 		},
 		
 		methods: {

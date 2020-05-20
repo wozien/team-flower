@@ -4,6 +4,7 @@ import store from './store/index.js';
 import TfButton from '@/components/tf/tf-button.vue';
 import TfIcon from '@/components/tf/tf-icon.vue';
 import TfAvatar from '@/components/tf/tf-avatar.vue';
+import TfLoading from '@/components/tf/tf-loading.vue';
 
 Vue.config.productionTip = false
 Vue.prototype.$store = store;
@@ -12,6 +13,7 @@ Vue.prototype.$store = store;
 Vue.component('tf-button', TfButton);
 Vue.component('tf-icon', TfIcon);
 Vue.component('tf-avatar', TfAvatar);
+Vue.component('tf-loading', TfLoading);
 
 App.mpType = 'app'
 

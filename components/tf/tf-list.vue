@@ -34,6 +34,8 @@
 				</movable-view>
 			</movable-area>
 		</view>
+		
+		
 	</view>
 </template>
 

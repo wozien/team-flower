@@ -14,6 +14,7 @@
 				:lower-threshold="20"
 				@scrolltolower="reachBottom">
 				<slot></slot>
+				<tf-loading></tf-loading>
 			</scroll-view>
 			<view class="footer" v-if="showFooter">
 				<slot name="footer"></slot>
@@ -98,6 +99,7 @@
 		}
 		.scroll {
 			flex: 1;
+			position: relative;
 		}
 		.footer {
 			flex: 0 0 70px;
