@@ -8,7 +8,7 @@
 
 <script>
 	import { mapState } from 'vuex';
-	import { getCollection } from '@/common/js/db.js';
+	import { getCollection, getMyTeams } from '@/common/js/db.js';
 	import { version } from '@/common/js/config.js';
 	import Team from '@/common/js/Team.js';
 	
@@ -33,13 +33,22 @@
 		methods:{
 			onCreate() {
 				if(this.name) {
-					// TODO 团队名重复校验
-
-					const teamCollection = getCollection('team');
-					const teamData = new Team(this.name, this.openid, this.userInfo);
-					teamData.version = version;
-					teamCollection.add({
-						data: teamData
+					getMyTeams(this.openid).then(teams => {
+						// 最多创建5个团队
+						if(teams.length === 5) {
+							return Promise.reject('最多只能创建5个团队哦~');
+						}
+						const index = teams.findIndex(team => team.name === this.name);
+						if(index > -1) {
+							return Promise.reject('团队名不能重复哦~');
+						}
+					}).then(() => {
+						const teamCollection = getCollection('team');
+						const teamData = new Team(this.name, this.openid, this.userInfo);
+						teamData.version = version;
+						return teamCollection.add({
+							data: teamData
+						});
 					}).then(res => {
 						const data = {
 							team_id: res._id,
@@ -49,8 +58,12 @@
 						uni.redirectTo({
 							url: './create-success?info=' + JSON.stringify(data)
 						});
-					})
-				}
+					}).catch(reason => {
+						this.$toast(reason);
+					});
+				} else {
+					this.$toast('团队名不能为空');
+				}	
 			}
 		}
 	}

@@ -15,6 +15,19 @@ Vue.component('tf-icon', TfIcon);
 Vue.component('tf-avatar', TfAvatar);
 Vue.component('tf-loading', TfLoading);
 
+// 全局方法
+Vue.prototype.$toast = (title, icon = 'none') => {
+	return new Promise(resolve => {
+		uni.showToast({
+			title,
+			icon,
+			success() {
+				resolve();
+			}
+		});
+	})
+}
+
 App.mpType = 'app'
 
 const app = new Vue({

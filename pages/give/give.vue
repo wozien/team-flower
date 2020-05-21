@@ -67,10 +67,7 @@
 				
 				if(errorMsg) {
 					// 花额度不够
-					uni.showToast({
-						title: errorMsg,
-						icon: "none"
-					});
+					this.$toast(errorMsg);
 					return;
 				}
 				
@@ -137,17 +134,13 @@
 						}
 					});
 					uni.$emit('inc-flower', inc);
-					uni.showToast({
-						title: this.desc + '成功',
-						icon: "success",
-						success() {
-							setTimeout(() => {
-								uni.navigateBack({});
-							}, 1000);
-						}
+					this.$toast(this.desc + '成功', 'success').then(() => {
+						setTimeout(() => {
+							uni.navigateBack({});
+						}, 600);
 					});
 				}).catch(e => {
-					console.warn('赠送失败：' + e.message); 
+					this.$toast('赠送失败：' + e.message);
 				});
 			},
 			

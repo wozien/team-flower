@@ -34,10 +34,7 @@
 		methods: {
 			setQuota() {
 				if(+this.quota < 0) {
-					uni.showToast({
-						title: '小红花额度不能小于0',
-						icon: 'none'
-					});
+					this.$toast('小红花额度不能小于0');
 					return;
 				}
 				
@@ -63,16 +60,11 @@
 						}
 					}
 				}).then(() => {
-					uni.showToast({
-						title: "修改额度成功",
-						icon: 'success',
-						success() {
-							setTimeout(() => {
-								uni.navigateBack({});
-							}, 1000);
-						}
-					});
-					
+					this.$toast('修改额度成功', 'success').then(() => {
+						setTimeout(() => {
+							uni.navigateBack({});
+						}, 600);
+					})
 				});
 			}
 		}

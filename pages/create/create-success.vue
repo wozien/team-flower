@@ -18,11 +18,7 @@
 			return {
 				title: this.info.master + '邀请你加入' + this.info.team_name,
 				imageUrl: '../../static/img/invite.png',
-				path: '/pages/invite/invite?info=' + JSON.stringify(this.info),
-				success: res => {
-					console.log('invite send');
-					// TODO navigate to rank page
-				}
+				path: '/pages/invite/invite?info=' + JSON.stringify(this.info)
 			}
 		},
 		

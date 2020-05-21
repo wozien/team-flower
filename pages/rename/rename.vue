@@ -29,10 +29,7 @@
 		methods: {
 			rename() {
 				if(!this.name) {
-					uni.showToast({
-						title: '昵称不能为空',
-						icon: 'none'
-					});
+					this.$toast('昵称不能为空');
 					return;
 				}
 				
