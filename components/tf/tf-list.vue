@@ -139,45 +139,7 @@
 			},
 			
 			delItem(item) {
-				const content = `确定移除成员${item.nickname}吗?`;
-				uni.showModal({
-					content,
-					success: res => {
-						if(res.confirm) {
-							this.removeMember(item.openid)
-						}
-					}
-				});
-			},
-			
-			removeMember(openid) {
-				// console.log(openid);
-				if(this.openid === openid) {
-					uni.showToast({
-						title: '无法移除自己',
-						icon: 'none'
-					});
-					return;
-				}
-				wx.cloud.callFunction({
-					name: 'team',
-					data: {
-						type: 'remove_member',
-						params: {
-							team_id: this.team._id,
-							openid
-						}
-					}
-				}).then(res => {
-					uni.showToast({
-						title: '移除成功',
-						icon: 'none'
-					});
-					const index = this.listData.findIndex(item => item.openid === openid);
-					if(index > -1) {
-						this.listData.splice(index, 1);
-					}
-				});
+				this.$emit('delete', item);
 			}
 		}
 	}

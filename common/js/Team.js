@@ -7,6 +7,7 @@ class Team {
 	constructor(name, master_id, user) {
 		this.name = name;
 		this.master_id = master_id;
+		this.quota = 100;
 		this.date = new Date();
 		
 		const member = Team.generateMember(master_id, user);

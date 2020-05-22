@@ -14,6 +14,8 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex';
+	
 	export default {
 		data() {
 			return {
@@ -21,6 +23,10 @@
 			}
 		},
 		
+		computed: {
+			...mapState(['team'])
+		},
+
 		onLoad({team_id}) {
 			this.team_id = team_id;
 		},
@@ -29,6 +35,7 @@
 			uni.setNavigationBarTitle({
 				title: '设置小红花初始额度'
 			});
+			this.quota = this.team.quota || 100;
 		},
 		
 		methods: {
@@ -56,7 +63,7 @@
 						type: 'reset_quota',
 						params: {
 							team_id: this.team_id,
-							quota: this.quota
+							quota: +this.quota
 						}
 					}
 				}).then(() => {

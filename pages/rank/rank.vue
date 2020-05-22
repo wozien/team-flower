@@ -26,8 +26,9 @@
 						</view>
 					</view>
 				</view>
+				
 				<!-- 排名列表 -->
-				<tf-list :members="queryMembers" :is-master="isMaster"></tf-list>
+				<tf-list :members="queryMembers" :is-master="isMaster" @delete="delItem"></tf-list>
 				
 				<view slot="footer" class="footer">
 					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
@@ -235,7 +236,57 @@
 			hideDrawer() {
 				setTimeout(() => {
 					this.visible = false;
-				}, 1000);
+				}, 0);
+			},
+			
+			delItem(item) {
+				const content = `确定移除成员${item.nickname}吗?`;
+				uni.showModal({
+					content,
+					success: res => {
+						if(res.confirm) {
+							this.removeMember(item.openid)
+						}
+					}
+				});
+			},
+			
+			removeMember(openid) {
+				if(this.openid === openid) {
+					this.$toast('无法移除自己');
+					return;
+				}
+				
+				// 移除成员
+				let p1 = wx.cloud.callFunction({
+					name: 'team',
+					data: {
+						type: 'remove_member',
+						params: {
+							team_id: this.team._id,
+							openid
+						}
+					}
+				});
+				// 移除历史记录
+				let p2 = wx.cloud.callFunction({
+					name: 'history',
+					data: {
+						type: 'remove_history',
+						params: {
+							team_id: this.team._id,
+							to: openid
+						}
+					}
+				});
+				
+				Promise.all([p1, p2]).then(res => {
+					this.$toast('移除成功', 'success');
+					const index = this.members.findIndex(mb => mb.openid === openid);
+					if(index > -1) {
+						this.members.splice(index, 1);
+					}
+				});
 			},
 			
 			...mapMutations({

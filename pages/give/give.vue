@@ -5,7 +5,7 @@
 			<input type="number" v-model="number" placeholder="0.0" :focus="true" />
 		</view>
 		<view class="message">
-			<textarea placeholder="感谢你的辛勤付出~" v-model="message" :focus="true" placeholder-style="color: #ccc"/>
+			<textarea placeholder="感谢你的辛勤付出~" v-model="message" placeholder-style="color: #ccc"/>
 		</view>
 		<view class="flower">
 			<tf-icon icon="flower-plain" :size="34" style="color: #ccc"></tf-icon>
@@ -141,6 +141,7 @@
 					});
 				}).catch(e => {
 					this.$toast('赠送失败：' + e.message);
+					// console.warn('赠送失败：' + e.message);
 				});
 			},
 			
