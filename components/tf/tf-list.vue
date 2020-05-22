@@ -114,7 +114,7 @@
 			},
 			
 			openMenu() {
-				this.setXmove(-60);
+				this.setXmove(-62);
 			},
 			
 			hideMenu() {
@@ -150,12 +150,14 @@
 		.list-item {
 			border-top: 1px solid #eee;
 			overflow: hidden;
-			margin: 0px 20px;
+			// margin: 0 40rpx;
 			position:relative;
+			width: calc(100vw - 80rpx);
 			height: 150rpx;
+			margin: 0 auto;
 			&.list-item-first { border-top: none}
 			.movable-area {
-				width: 670rpx;
+				width: calc(100vw - 80rpx);
 			}
 			
 			.movable-view {
@@ -163,7 +165,8 @@
 				display: flex;
 				
 				.list-item-content {
-					flex: 0 0 670rpx;
+					flex: 0 0;
+					flex-basis: calc(100vw - 80rpx);
 					display: flex;
 					width: 670rpx;
 					height: 150rpx;

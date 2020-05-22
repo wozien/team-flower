@@ -87,15 +87,16 @@
 								}
 							}
 						});
-					})
-					.then(() => {
+					}).then(() => {
 						// 订阅消息操作后才能跳转
 						return subscribeProm;
 					}).then(() => {
 						uni.redirectTo({
 							url: '../rank/rank?team_id=' + this.team_id
 						});
-					})
+					}).catch((reason) => {
+						this.$toast(reason);
+					});
 				}
 			},
 			
