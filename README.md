@@ -1,1 +1,33 @@
-### 基于uni-app构建团队积分排行榜应用
+# team-flower: 一款简单的团队积分管理工具
+
+## 技术栈
+uni-app + 小程序云开发
+
+## 运行
+- `git clone`	项目到本地，推荐用`HBuilder`打开
+- 利用微信开发工具申请一个云开发服务器， 并部署[小程序云开发项目](https://github.com/wozien/team-flower-cloud)
+- 修改 `App.vue` 下的云服务器配置：
+  ```js
+	onLaunch(e) {
+		if (!wx.cloud) {
+			console.error('请使用 2.2.3 或以上的基础库以使用云能力')
+		} else {
+			wx.cloud.init({
+				env: 'mpyun-0ll9s', // 这里修改成自己申请服务器名
+				traceUser: true,
+			})
+		}
+	}
+	```
+- 在云储存中新建两个数据库 `team` 和 `history`, 并修改自定义权限为：
+  ```js
+	{
+	  "read": true,
+	  "write": true
+	}
+	```
+- 在`Hbuilder`配置微信开发者工具路径，点击运行到小程序
+
+## 友链
+
+![团队小红花](https://6d70-mpyun-0ll9s-1301785373.tcb.qcloud.la/team-flower-code.jpg?sign=3c23aad6f95e6614d1acf4f340aa1dc0&t=1590207725)
