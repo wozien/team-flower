@@ -6,7 +6,7 @@
 			<text>{{ team.name }}</text>
 		</view>
 		<view class="content" :style="{ height: contentHeight + 'px' }">
-			<tf-layout :height="contentHeight" :show-footer="isMaster">
+			<tf-layout :height="contentHeight" :show-footer="false">
 				<view slot="header" class="header">
 					<view class="info">
 						<tf-avatar :url="my.avatar" class="avatar" @click.native="toDetail(my.openid)"></tf-avatar>
@@ -30,9 +30,9 @@
 				<!-- 排名列表 -->
 				<tf-list :members="queryMembers" :is-master="isMaster" @delete="delItem"></tf-list>
 				
-				<view slot="footer" class="footer">
+				<!-- <view slot="footer" class="footer">
 					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
-				</view>
+				</view> -->
 			</tf-layout>
 		</view>
 		
