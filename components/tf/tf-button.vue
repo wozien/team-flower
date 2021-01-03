@@ -38,7 +38,7 @@
 		padding: 4px 0px;
 		border: 1px solid #eee;
 		background-color: #fff;
-		>text {
+		text {
 			font-size: 36rpx;
 			margin-right: 6px;
 		}

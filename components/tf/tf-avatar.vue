@@ -3,7 +3,8 @@
 		:class="{
 			'tf-avatar-large': size === 'large',
 			'tf-avatar-small': size === 'small'
-			}">
+			}"
+	>
 		<image :src="url" alt="头像" />
 	</view>
 </template>

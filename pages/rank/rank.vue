@@ -59,7 +59,8 @@
 					</view>
 				</view>
 			</scroll-view>
-			<tf-button v-if="isMaster" type="primary" :width="140" size="small" @click="setQuota">设置小红花额度</tf-button>
+			<!-- <tf-button v-if="isMaster" type="primary" :width="140" size="small" @click="setQuota">设置小红花额度</tf-button> -->
+			<tf-button v-if="isMaster" type="primary"  :width="140" size="small" open-type="share">邀请好友加入</tf-button>
 			<tf-button :width="140" size="small" @click="createTeam">创建新团队</tf-button>
 		</uni-drawer>
 		
@@ -69,19 +70,17 @@
 <script>
 	import TfLayout from '@/components/tf/tf-layout.vue';
 	import TfList from '../../components/tf/tf-list.vue';
-	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
 	import { mapState, mapMutations } from 'vuex';
 	import { getTeam, getMyTeams } from '@/common/js/db.js';
 	
 	const systemInfo = uni.getSystemInfoSync();
 	const statusBarHeight = systemInfo.statusBarHeight
-	const contentHeight = systemInfo.screenHeight - 40 - statusBarHeight
+	const contentHeight = systemInfo.windowHeight - 40 - statusBarHeight
 	
 	export default {
 		components: {
 			TfLayout,
-			TfList,
-			uniDrawer
+			TfList
 		},
 		
 		data() {
@@ -109,7 +108,7 @@
 				return this.team.master_id === this.openid;
 			},
 			teamsScrollHeight() {
-				let res = systemInfo.screenHeight - 190 -statusBarHeight;
+				let res = systemInfo.windowHeight - 180 -statusBarHeight;
 				if(!this.isMaster) {
 					res += 46;
 				}
@@ -177,6 +176,15 @@
 					});
 				}
 			});
+		},
+		
+		created() {
+			if(!this.openid) {
+				// 未登录
+				uni.navigateTo({
+					url: '../index/index'
+				})
+			}
 		},
 		
 		methods: {

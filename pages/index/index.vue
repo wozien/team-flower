@@ -58,7 +58,7 @@
 						if(res.length) {
 							// 跳转rank页面
 							const team_id = uni.getStorageSync('TEAM_ID') || res[0].id;
-							uni.navigateTo({
+							uni.switchTab({
 								url: '../rank/rank?team_id=' + team_id
 							});
 						}
