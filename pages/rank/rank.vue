@@ -125,10 +125,11 @@
 		},
 		
 		onLoad({team_id}) {
-			this.team_id = team_id;
+			this.team_id = team_id || uni.getStorageSync('TEAM_ID');
 		},
 		
 		onShow() {
+			this.team_id = uni.getStorageSync('TEAM_ID') || '';
 			getMyTeams(this.openid).then(res => {
 				this.teams = res || [];
 				if(this.teams.length) {
@@ -137,6 +138,7 @@
 					if(!this.team_id || index < 0) {
 						this.team_id = this.teams[0].id;
 					}
+					this.setTeams(this.teams);
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
@@ -169,6 +171,7 @@
 					if(!this.team_id || index < 0) {
 						this.team_id = this.teams[0].id;
 					}
+					this.setTeams(this.teams);
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
@@ -232,14 +235,14 @@
 				});
 			},
 			
-			setQuota() {
-				uni.navigateTo({
-					url: '../quota/quota?team_id=' + this.team._id,
-					success: () => {
-						this.hideDrawer();
-					}
-				});
-			},
+			// setQuota() {
+			// 	uni.navigateTo({
+			// 		url: '../quota/quota?team_id=' + this.team._id,
+			// 		success: () => {
+			// 			this.hideDrawer();
+			// 		}
+			// 	});
+			// },
 			
 			hideDrawer() {
 				setTimeout(() => {
@@ -298,7 +301,8 @@
 			},
 			
 			...mapMutations({
-				setTeam: 'SET_TEAM'
+				setTeam: 'SET_TEAM',
+				setTeams: 'SET_MY_TEAMS'
 			})
 		}
 	}

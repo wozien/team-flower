@@ -70,7 +70,14 @@
 			"style" : {
 					"disableScroll":true
 			}	
-		}	
+		},
+		{
+			"path" : "pages/quota/switch-team",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"切换团队"
+			}
+		}
    ],
 	"globalStyle": {
 		"navigationBarBackgroundColor": "#7F83BB",
@@ -100,6 +107,9 @@
 				"selectedIconPath":"static/img/tab-my-active.png"
 			}
 		]
+	},
+	"easycom": {
+		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
 	},
 	"condition": { //模式配置，仅开发期间生效
 	    "current": 0, //当前激活的模式（list 的索引项）

@@ -5,7 +5,7 @@
 		:style="{width: width ? width + 'px' : ''}"
 		:open-type="openType || ''"
 		@click="$emit('click')">
-		<text v-if="icon" class="iconfont" :class="'icon' + icon"></text>
+		<text v-if="icon" class="tf-icon" :class="'tf-icon-' + icon"></text>
 		<slot></slot>
 	</button>
 </template>

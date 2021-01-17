@@ -29,7 +29,7 @@
 					</view>
 					
 					<view class="list-item-del" @click.stop="delItem(item)">
-						<text class="iconfont icontrash"></text>
+						<text class="tf-icon tf-icon-trash"></text>
 					</view>
 				</movable-view>
 			</movable-area>

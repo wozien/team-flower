@@ -13,11 +13,30 @@
 				</view>
 			</view>
 		</view>
+		
+		<u-cell-group :border="false">
+			<u-cell-item title="切换团队" :arrow="true" @click="onSwitchTeam">
+				<u-icon slot="icon" name="team" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+			</u-cell-item>
+			<u-cell-item title="设置管理模式" :arrow="true" @click="onSetTeamMode">
+				<u-icon slot="icon" name="set" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+			</u-cell-item>
+			<u-cell-item title="设置小红花额度" :arrow="true" @click="onSetQuota">
+				<u-icon slot="icon" name="flower-plain" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+			</u-cell-item>
+			<u-cell-item title="重置排行榜数据" :arrow="true" @click="onResetTeamData">
+				<u-icon slot="icon" name="reset" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+			</u-cell-item>
+			<u-cell-item title="留言反馈" :arrow="true">
+				<u-icon slot="icon" name="feedback" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+			</u-cell-item>
+		</u-cell-group>
 	</view>
 </template>
 
 <script>
 	import { mapState } from 'vuex';
+	import { getCollection } from '../../common/js/db.js';
 	
 	export default {
 		data() {
@@ -40,6 +59,79 @@
 			uni.setNavigationBarTitle({
 				title: this.team.name
 			})
+		},
+		
+		methods: {
+			onSwitchTeam() {
+				uni.navigateTo({
+					url: '../quota/switch-team'
+				});
+			},
+			
+			onSetQuota() {
+				if(!this._checkPeimission()) return;
+				uni.navigateTo({
+					url: '../quota/quota?team_id=' + this.team._id
+				});
+			},
+			
+			onSetTeamMode() {
+				if(!this._checkPeimission()) return;
+			},
+			
+			onResetTeamData() {
+				if(!this._checkPeimission()) return;
+				
+				const content= '重置排行榜数据后，所有人的小红花数都将归零重新开始，但赠送记录和扣除记录不会被清楚'
+				uni.showModal({
+					content,
+					success: res => {
+						if(res.confirm) {
+							this._resetFlowers()
+						}
+					}
+				})
+			},
+			
+			// 重置小红花数
+			_resetFlowers() {
+				const prom1 = wx.cloud.callFunction({
+					name: 'team',
+					data: {
+						type: 'reset_flowers',
+						params: {
+							team_id: this.team._id
+						}
+					}
+				});
+				
+				// 增加一条系统重置的log
+				const data = {
+					team_id: this.team._id,
+					from: 'SYSTEM',
+					to: '',
+					number: 0,
+					message: 'RESET_FLOWERS',
+					add: false,
+					date: new Date()
+				}
+				const historySet = getCollection('history');
+				const prom2 = historySet.add({ data });
+				
+				Promise.all([prom1, prom2]).then(() => {
+					this.$toast('重置小红花成功', 'success');
+				}).catch(e => {
+					this.$toast('重置失败：' + e.message);
+				}) 
+			},
+			
+			_checkPeimission() {
+				if(!this.isMaster) {
+					this.$toast('您不是该团队的管理员');
+					return false;
+				}
+				return true;
+			}
 		}
 	}
 </script>
@@ -47,6 +139,7 @@
 <style lang="scss">
 .profile-page {
 	height: 100%;
+	background-color: #fff;
 	.header {
 		overflow: hidden;
 		position: relative;
