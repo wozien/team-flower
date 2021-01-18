@@ -64,7 +64,7 @@
 		methods: {
 			onSwitchTeam() {
 				uni.navigateTo({
-					url: '../quota/switch-team'
+					url: './switch-team'
 				});
 			},
 			
@@ -77,6 +77,9 @@
 			
 			onSetTeamMode() {
 				if(!this._checkPeimission()) return;
+				uni.navigateTo({
+					url: './manager-mode'
+				});
 			},
 			
 			onResetTeamData() {

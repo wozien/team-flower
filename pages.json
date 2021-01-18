@@ -72,10 +72,17 @@
 			}	
 		},
 		{
-			"path" : "pages/quota/switch-team",
+			"path" : "pages/profile/switch-team",
 			"style" : {
 					"disableScroll":true,
 					"navigationBarTitleText":"切换团队"
+			}
+		},
+		{
+			"path":"pages/profile/manager-mode",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"切换管理模式"
 			}
 		}
    ],

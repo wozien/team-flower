@@ -1,5 +1,5 @@
 <template>
-	<view class="tf-page">
+	<view class="tf-page tf-switch-team-page">
 		<view class="list-container">
 			<view class="list-item" 
 				:class="[item.id === team_id && 'current']"

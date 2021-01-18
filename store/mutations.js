@@ -15,6 +15,9 @@ const mutations = {
 	},
 	[types.SET_TEAM](state, team) {
 		state.team = team;
+	},
+	[types.SET_MODE](state, mode) {
+		state.team.mode = mode;
 	}
 }
 

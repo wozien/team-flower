@@ -21,10 +21,11 @@
 						<view class="dot"></view>
 					</view>
 					<view class="record" v-if="!item.last">
-						<text class="number" :class="{'number-add': item.add}">
+						<text class="number" :class="{'number-add': item.add}" v-if="!item.isSystem">
 							{{ (item.add ? '+ ' : '- ') + item.number }}
 						</text>
-						<view class="message">
+						<view v-if="item.isSystem" class="system-message">{{ item.message }}</view>
+						<view class="message" v-else>
 							<tf-icon icon="quote-left" style="color: #9b9b9b" :size="12"></tf-icon>
 							<text>{{ item.message }}</text>
 							<tf-icon icon="quote-right" style="margin-left: 4px;color: #9b9b9b;" :size="12"></tf-icon>
@@ -168,9 +169,19 @@
 			
 			formatHistory(data) {
 				data.forEach(item => {
-					const data = this.team.members.find(mb => mb.openid === item.from);
-					if(data) {
-						item.from = data;
+					if(item.from === 'SYSTEM') {
+						// 系统的操作的log
+						item.isSystem = true;
+						switch(item.message) {
+							case 'RESET_FLOWERS':
+								item.message = '管理员重置了小红花排行榜，小红花数量归零'; break;
+							default: break;
+						}
+					} else {
+						const data = this.team.members.find(mb => mb.openid === item.from);
+						if(data) {
+							item.from = data;
+						}
 					}
 					item.date = this.formatDate(new Date(item.date));
 				})
@@ -328,6 +339,11 @@
 							color: #999;
 							font-size: 26rpx;
 						}
+					}
+					.system-message {
+						font-size: 24rpx;
+						color: #999;
+						padding: 10px;
 					}
 				}
 				.last {
