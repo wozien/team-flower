@@ -1,6 +1,6 @@
 <template>
 	<view class="rank-detail">
-		<tf-layout :mg-top="60" @scroll-lower="toScrollLower" :loading="loading">
+		<tf-layout :mg-top="60" @scroll-lower="toScrollLower" :loading="loading" :show-footer="showFooter">
 			<view class="member" slot="header">
 				<tf-avatar :url="member.avatar" class="avatar" size="large"></tf-avatar>
 				<view class="name-and-rank">
@@ -45,7 +45,7 @@
 				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close" type="primary"
 				 style="margin-right: 16px;" @click="updateFlower(false)">扣除</tf-button>
 				<tf-button v-if="isSelf" :width="125" size="small" icon="update" @click="rename" type="primary">修改昵称</tf-button>
-				<tf-button v-else :width="125" size="small" icon="aixin" type="assia" @click="updateFlower(true)">感谢</tf-button>
+				<tf-button v-else-if="isHelpMode || isMaster" :width="125" size="small" icon="aixin" type="assia" @click="updateFlower(true)">感谢</tf-button>
 			</view>
 		</tf-layout>
 	</view>
@@ -76,6 +76,12 @@
 			},
 			isMaster() {
 				return this.team.master_id === this.openid;
+			},
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
+			showFooter() {
+				return this.isMaster || this.isSelf || this.isHelpMode;
 			},
 			...mapState(['team', 'openid'])
 		},

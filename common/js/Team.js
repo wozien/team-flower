@@ -9,6 +9,7 @@ class Team {
 		this.master_id = master_id;
 		this.quota = 100;
 		this.date = new Date();
+		this.mode = 'HELP';
 		
 		const member = Team.generateMember(master_id, user);
 		member.quota = 999999;              // 管理员额度

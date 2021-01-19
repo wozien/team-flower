@@ -1,6 +1,6 @@
 <template>
-	<view>
-		公告页面
+	<view class="tf-page notice-page">
+		notice list
 	</view>
 </template>
 
