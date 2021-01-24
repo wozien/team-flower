@@ -5,11 +5,14 @@
 			<text>也许你该试试更年轻的管理方式</text>
 			<text class="name">--- 团队小红花</text>
 		</view>
-		<button class="btn" 
+		<button 
+			v-if="!hasAuth"
+			class="btn" 
 			open-type="getUserInfo"
 			@click="subscribe"
 		  @getuserinfo="onGetUserInfo"
-		>立即创建团队</button>
+		>授权登录</button>
+		<button v-else class="btn" @click="onCreate">立即创建团队</button>
 	</view>
 </template>
 
@@ -22,11 +25,14 @@
 	
 	export default {	
 		computed: {
-			...mapState(['openid'])
+			hasAuth() {
+				return !!this.userInfo;
+			},
+			...mapState(['openid', 'userInfo'])
 		},
-		
+			
 		onLoad({is_create}) {
-			this.isCreate = is_create || false;
+			this.is_create = is_create;
 			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
@@ -34,6 +40,9 @@
 						uni.getUserInfo({
 							success: res => {
 								this.setUserInfo(res.userInfo);
+								if(this.openid && !this.is_create) {
+									this._gotoRank();
+								}
 							}
 						})
 					}
@@ -41,9 +50,7 @@
 			})
 		},
 		
-		onShow() {
-			if(this.isCreate) return;
-			
+		onShow() {		
 			// 登录成功查询我的团队数据
 			let prom;
 			if(!this.openid){
@@ -53,19 +60,11 @@
 			}
 			
 			prom.then(openid => {
-				if(openid) {
-					getMyTeams(openid).then(res => {
-						if(res.length) {
-							// 跳转rank页面
-							const team_id = uni.getStorageSync('TEAM_ID') || res[0].id;
-							uni.setStorageSync('TEAM_ID', team_id);
-							uni.switchTab({
-								url: '../rank/rank'
-							});
-						}
-					})
-				}
-			});
+				if(this.is_create || !this.userInfo)
+					return Promise.reject();
+				
+				return this._gotoRank();
+			})
 		},
 		
 		methods: {
@@ -80,13 +79,13 @@
 					}
 					
 					Promise.all([prom, subscribeProm]).then(() => {
-						uni.navigateTo({
-							url: '../create/create'
-						})
+						if(!this.is_create) {
+							this._gotoRank();
+						}
 					});
 				}
 			},
-			
+				
 			// 订阅消息
 			subscribe() {
 				wx.requestSubscribeMessage({
@@ -95,6 +94,35 @@
 						subscribeResolve();
 					}
 				});
+			},
+			
+			onCreate() {
+				uni.navigateTo({
+					url: '../create/create'
+				})
+			},
+			
+			// 对于已经授权并且不是创建队伍的情况 is_create=undefined
+			_gotoRank() {
+				let team_id = uni.getStorageSync('TEAM_ID');
+				let prom;
+				
+				if(team_id) {
+					prom = Promise.resolve(team_id);
+				} else {
+					prom = getMyTeams(this.openid).then(res => {
+						return res.length && res[0].id;
+					})
+				}
+				
+				prom.then(team_id => {
+					if(team_id) {
+						uni.setStorageSync('TEAM_ID', team_id);
+						uni.switchTab({
+							url: '../rank/rank'
+						});
+					}
+				})
 			},
 			
 			...mapMutations({

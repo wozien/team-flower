@@ -144,8 +144,8 @@
 				// }
 				{
 					"name": "my", //模式名称
-					"path": "pages/notice/notice-create",
-					"query":  ""
+					"path": "pages/notice/notice-detail",
+					"query":  "info={\"notice_id\":\"79550af2600c72ca009f85296d162f63\",\"master\":\"James💤\",\"team_id\":\"54bac78c5ec7ac490014006f16f1a2fa\",\"team_name\":\"东非大裂谷\"}"
 				}
 	    ]
 	}

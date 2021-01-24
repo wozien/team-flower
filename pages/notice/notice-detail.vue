@@ -45,8 +45,8 @@
 		},
 		
 		onLoad({ info }) {
-			this.info = info
-			info = JSON.parse(info)
+			this.info = info;
+			info = JSON.parse(info);
 			this.notice_id = info.notice_id;
 			this.team_id = info.team_id;
 		},
@@ -64,7 +64,7 @@
 				}
 				
 				subProm.then(openid => {
-					if(!this.teams) {
+					if(!this.teams.length) {
 						return getMyTeams(openid);
 					}
 					return this.teams;
@@ -80,7 +80,7 @@
 				if(this.notice_id) {
 				  return this.loadData().then(() => this.loading = false);
 				}
-			}).catch(() => {
+			}).catch(e => {
 				// 跳转到邀请页面
 				uni.navigateTo({
 					url: '../invite/invite?info=' + this.info

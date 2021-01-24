@@ -31,10 +31,6 @@
 				
 				<!-- 排名列表 -->
 				<tf-list :members="queryMembers" :is-master="isMaster" @delete="delItem"></tf-list>
-				
-				<!-- <view slot="footer" class="footer">
-					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
-				</view> -->
 			</tf-layout>
 		</view>
 		
@@ -76,8 +72,8 @@
 	import { getTeam, getMyTeams } from '@/common/js/db.js';
 	
 	const systemInfo = uni.getSystemInfoSync();
-	const statusBarHeight = systemInfo.statusBarHeight
-	const contentHeight = systemInfo.windowHeight - 40 - statusBarHeight
+	const statusBarHeight = systemInfo.statusBarHeight;
+	const contentHeight = systemInfo.windowHeight - 40 - statusBarHeight;
 	
 	export default {
 		components: {
@@ -119,7 +115,7 @@
 			isHelpMode() {
 				return !this.team.mode || this.team.mode === 'HELP';
 			},
-			...mapState(['team', 'openid'])
+			...mapState(['team', 'openid', 'userInfo'])
 		},
 		
 		watch: {
@@ -129,10 +125,15 @@
 			}
 		},
 		
-		onLoad({team_id}) {
-			this.team_id = team_id || uni.getStorageSync('TEAM_ID');
+		onLoad() {
+			if(!this.openid) {
+				// 未登录或者未授权
+				uni.navigateTo({
+					url: '../index/index'
+				})
+				return;
+			}
 			
-			// 授权用户获取用户信息
 			uni.getSetting({
 				success: res => {
 					if(res.authSetting['scope.userInfo']) {
@@ -142,16 +143,17 @@
 							}
 						})
 					} else {
-						uni.redirectTo({
-							url: '../index/index?is_create=1'
-						});
+						uni.navigateTo({
+							url: '../index/index'
+						})
 					}
 				}
 			})
 		},
 		
 		onShow() {
-			this.team_id = uni.getStorageSync('TEAM_ID') || '';
+			if(!this.openid) return;
+			this.team_id = uni.getStorageSync('TEAM_ID');
 			getMyTeams(this.openid).then(res => {
 				this.teams = res || [];
 				if(this.teams.length) {
@@ -204,12 +206,9 @@
 		},
 		
 		created() {
-			if(!this.openid) {
-				// 未登录
-				uni.navigateTo({
-					url: '../index/index'
-				})
-			}
+			// 从分享的公告页进入排行页面高度需要重新计算一下
+			const systemInfo = uni.getSystemInfoSync();
+			this.contentHeight = systemInfo.windowHeight - 40 - systemInfo.statusBarHeight;
 		},
 		
 		methods: {

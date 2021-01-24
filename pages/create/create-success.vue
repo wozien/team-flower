@@ -24,9 +24,10 @@
 		
 		methods: {
 			toRank() {
-				uni.navigateTo({
-					url: "../rank/rank?team_id=" + this.info.team_id
-				})
+				uni.setStorageSync('TEAM_ID', this.info.team_id);
+				uni.switchTab({
+					url: '../rank/rank'
+				});
 			}
 		}
 	}
