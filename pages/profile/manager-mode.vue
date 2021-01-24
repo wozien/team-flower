@@ -29,6 +29,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import { getMyTeams } from '@/common/js/db.js';
 
 export default {
 	data() {
@@ -38,7 +39,7 @@ export default {
 	},
 	
 	computed: {
-		...mapState(['team'])
+		...mapState(['team', 'openid'])
 	},
 	
 	created() {
@@ -68,18 +69,19 @@ export default {
 			}
 			
 			prom.then(() => {
-				this.$toast('设置成功').then(() => {
-					setTimeout(() => {
-						uni.navigateBack({});
-					}, 600);
-				});
+				this.$toast('设置成功');
+				return getMyTeams(this.openid);
+			}).then(res => {
+				this.setTeams(res);
+				uni.navigateBack({});
 			}).catch(e => {
 				this.$toast('设置失败: ' + e.message);
 			})
 		},
 		
 		...mapMutations({
-			'setMode': 'SET_MODE'
+			setMode: 'SET_MODE',
+			setTeams: 'SET_MY_TEAMS',
 		})
 	}
 }

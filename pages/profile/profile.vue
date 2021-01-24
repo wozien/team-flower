@@ -27,8 +27,9 @@
 			<u-cell-item title="重置排行榜数据" :arrow="true" @click="onResetTeamData">
 				<u-icon slot="icon" name="reset" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
 			</u-cell-item>
-			<u-cell-item title="留言反馈" :arrow="true">
+			<u-cell-item :arrow="true">
 				<u-icon slot="icon" name="feedback" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+				<button slot="title" open-type="feedback" class="feedback">留言反馈</button>
 			</u-cell-item>
 		</u-cell-group>
 	</view>
@@ -56,9 +57,9 @@
 		},
 		
 		onShow() {
-			uni.setNavigationBarTitle({
-				title: this.team.name
-			})
+			// uni.setNavigationBarTitle({
+			// 	title: this.team.name
+			// })
 		},
 		
 		methods: {
@@ -187,6 +188,18 @@
 					}
 				}
 			}
+		}
+	}
+
+	.feedback {
+		font-size: 28rpx;
+		line-height: 25px;
+		color: #606266;
+		padding-left: 0px;
+		padding-right: 230px;
+		background-color: transparent;
+		&::after {
+			border: none;
 		}
 	}
 }

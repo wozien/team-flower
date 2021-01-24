@@ -91,8 +91,9 @@
 						// 订阅消息操作后才能跳转
 						return subscribeProm;
 					}).then(() => {
-						uni.redirectTo({
-							url: '../rank/rank?team_id=' + this.team_id
+						uni.setStorageSync('TEAM_ID', this.team_id);
+						uni.switchTab({
+							url: '../rank/rank'
 						});
 					}).catch((reason) => {
 						this.$toast(reason);

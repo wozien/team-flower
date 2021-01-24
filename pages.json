@@ -62,7 +62,8 @@
 		{
 			"path" : "pages/notice/notice",
 			"style" : {
-					"disableScroll":true
+					"disableScroll":true,
+					"navigationBarTitleText":"团队公告"
 			}	
 		},
 		{
@@ -73,9 +74,17 @@
 			}	
 		},
 		{
+			"path" : "pages/notice/notice-detail",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"公告详情"
+			}	
+		},
+		{
 			"path" : "pages/profile/profile",
 			"style" : {
-					"disableScroll":true
+					"disableScroll":true,
+					"navigationBarTitleText":"我的信息"
 			}	
 		},
 		{

@@ -6,7 +6,11 @@
 				v-for="item in teams" 
 				:key="item.id" 
 				@click="onSwitchTeam(item.id)"
-			>{{ item.name}}</view>
+			>
+				<text class="name">{{ item.name}}</text>
+				<u-tag v-if="item.mode === 'HELP'" text="互助" shape="circle" color="#1AAD19" border-color="#1AAD19" bg-color="#fff" size="mini"></u-tag>
+				<u-tag v-else text="管控" shape="circle" color="#FF6600" border-color="#FF6600" bg-color="#fff" size="mini"></u-tag>
+			</view>
 		</view>
 		<view class="footer">
 			<tf-button type="primary" @click="onCreate">创建新团队</tf-button>
@@ -63,10 +67,15 @@
 		height: calc(100vh - 70px);
 		overflow-y: auto;
 		.list-item {
-			padding: 10px 28px;
+			padding: 12px 28px;
 			font-size: 28rpx;
 			color: $font-color;
 			border-bottom: 1px solid #eee;
+			display: flex;
+			align-items: center;
+			.name {
+				flex: 1;
+			}
 			&.current {
 				color: $color-primary;
 			}

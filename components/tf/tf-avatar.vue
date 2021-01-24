@@ -2,7 +2,8 @@
 	<view class="tf-avatar" 
 		:class="{
 			'tf-avatar-large': size === 'large',
-			'tf-avatar-small': size === 'small'
+			'tf-avatar-small': size === 'small',
+			'tf-avatar-mini': size === 'mini'
 			}"
 	>
 		<image :src="url" alt="头像" />
@@ -36,6 +37,10 @@
 		&.tf-avatar-small {
 			width: 30px;
 			height: 30px;
+		}
+		&.tf-avatar-mini {
+			width: 26px;
+			height: 26px;
 		}
 		> image {
 			width: 100%;

@@ -3,7 +3,9 @@
 		<view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 		<view class="menu" slot="left" @click="visible=true">
 			<tf-icon icon="menu"></tf-icon>
-			<text>{{ team.name }}</text>
+			<text class="name">{{ team.name }}</text>
+			<u-tag v-if="isHelpMode" text="互助" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
+			<u-tag v-else text="管控" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
 		</view>
 		<view class="content" :style="{ height: contentHeight + 'px' }">
 			<tf-layout :height="contentHeight" :show-footer="false">
@@ -114,6 +116,9 @@
 				}
 				return res;
 			},
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
 			...mapState(['team', 'openid'])
 		},
 		
@@ -126,6 +131,23 @@
 		
 		onLoad({team_id}) {
 			this.team_id = team_id || uni.getStorageSync('TEAM_ID');
+			
+			// 授权用户获取用户信息
+			uni.getSetting({
+				success: res => {
+					if(res.authSetting['scope.userInfo']) {
+						uni.getUserInfo({
+							success: res => {
+								this.setUserInfo(res.userInfo);
+							}
+						})
+					} else {
+						uni.redirectTo({
+							url: '../index/index?is_create=1'
+						});
+					}
+				}
+			})
 		},
 		
 		onShow() {
@@ -235,15 +257,6 @@
 				});
 			},
 			
-			// setQuota() {
-			// 	uni.navigateTo({
-			// 		url: '../quota/quota?team_id=' + this.team._id,
-			// 		success: () => {
-			// 			this.hideDrawer();
-			// 		}
-			// 	});
-			// },
-			
 			hideDrawer() {
 				setTimeout(() => {
 					this.visible = false;
@@ -302,7 +315,8 @@
 			
 			...mapMutations({
 				setTeam: 'SET_TEAM',
-				setTeams: 'SET_MY_TEAMS'
+				setTeams: 'SET_MY_TEAMS',
+				setUserInfo: 'SET_USERINFO'
 			})
 		}
 	}
@@ -322,8 +336,12 @@
 			background-color: $color-primary;
 			color: #fff;
 			text-align: left;
-			line-height: 40px;
 			padding-left: 8px;
+			display: flex;
+			align-items: center;
+			.name {
+				margin-right: 8px;
+			}
 		}
 		.content{
 			.header {

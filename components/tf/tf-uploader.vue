@@ -5,6 +5,9 @@
 			<view class="mask" v-if="item.status !== 'done'" >
 				<u-loading v-if="item.status === 'uploading'" color="#fff" mode="flower" size="40"></u-loading>
 			</view>
+			<view class="trash" v-if="item.status === 'done'" @click.stop="deleteImg(item)">
+				<text class="tf-icon tf-icon-close"></text>
+			</view>
 		</view>
 		<view class="tf-uploader__upload" @click="chooseImg" v-show="showUpload">
 			<text class="tf-icon tf-icon-camera"></text>
@@ -13,6 +16,8 @@
 </template>
 
 <script>
+	import { mapMutations } from 'vuex';
+	 
 	export default {
 		props: {
 			value: {
@@ -40,6 +45,7 @@
 		
 		methods: {
 			chooseImg() {
+				this.setShowTrigger(false); // 不触发当前页面的onshow钩子
 				uni.chooseImage({
 					count: 6,
 					success: res => {
@@ -47,7 +53,7 @@
 						if(files.length) {
 							this.$emit('input', [...this.value, ...files]);
 						}
-						this.afterRead && this.afterRead(files);
+						this.afterRead && this.afterRead.call(this.$parent, files);
 					}
 				});
 			},
@@ -60,7 +66,15 @@
 						current: index
 					});
 				}
-			}
+			},
+			
+			deleteImg(file) {
+				this.$emit('delete', file);
+			},
+			
+			...mapMutations({
+				setShowTrigger: 'SET_ONSHOW_TRIGGER'
+			})
 		}
 	}
 </script>
@@ -102,6 +116,24 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
+		}
+		.trash {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 14px;
+			height: 14px;
+			background-color: rgba(0, 0, 0, 0.7);
+			border-radius: 0 0 0 12px;
+			.tf-icon-close {
+				position: absolute;
+				top: -2px;
+				right: -2px;
+				color: #fff;
+				font-size: 16px;
+				-webkit-transform: scale(0.5);
+				transform: scale(0.5);
+			}
 		}
 	}
 }

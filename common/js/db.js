@@ -32,7 +32,8 @@ export const getMyTeams = openid => {
 					if(index > -1) {
 						res.push({
 							id: item._id,
-							name: item.name
+							name: item.name,
+							mode: item.mode || 'HELP'
 						});
 					}
 				});
