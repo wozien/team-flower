@@ -46,6 +46,11 @@ export default {
 		if(this.notice_id) {
 			this.loadData();
 		}
+		
+		const title = this.notice_id ? '编辑' : '创建';
+		uni.setNavigationBarTitle({
+			title: title + '公告'
+		});
 	},
 	
 	methods: {
