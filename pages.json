@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path":"pages/rank/rank",
+			"style":{
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style":{
 				"disableScroll": true
@@ -29,13 +36,6 @@
 			}
 		},
 		{
-			"path":"pages/rank/rank",
-			"style":{
-				"navigationStyle": "custom",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
 			"path": "pages/rank/detail",
 			"style":{
 				"enablePullDownRefresh": true
@@ -58,11 +58,80 @@
 			"style" : {
 				"disableScroll": true
 			}
+		},
+		{
+			"path" : "pages/notice/notice",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"团队公告"
+			}	
+		},
+		{
+			"path" : "pages/notice/notice-create",
+			"style" : {
+					"disableScroll":true
+			}	
+		},
+		{
+			"path" : "pages/notice/notice-detail",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"公告详情"
+			}	
+		},
+		{
+			"path" : "pages/profile/profile",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"我的信息"
+			}	
+		},
+		{
+			"path" : "pages/profile/switch-team",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"切换团队"
+			}
+		},
+		{
+			"path":"pages/profile/manager-mode",
+			"style" : {
+					"disableScroll":true,
+					"navigationBarTitleText":"切换管理模式"
+			}
 		}
-  ],
+   ],
 	"globalStyle": {
 		"navigationBarBackgroundColor": "#7F83BB",
 		"backgroundColor":"#7F83BB"
+	},
+	"tabBar": {
+		"color":"#999999",
+		"selectedColor":"#7F83BB",
+		"backgroundColor":"#fff",
+		"list":[
+			{
+				"pagePath":"pages/rank/rank",
+				"text":"排行榜",
+				"iconPath":"static/img/tab-rank.png",
+				"selectedIconPath":"static/img/tab-rank-active.png"
+			},
+			{
+				"pagePath":"pages/notice/notice",
+				"text":"公告",
+				"iconPath":"static/img/tab-notice.png",
+				"selectedIconPath":"static/img/tab-notice-active.png"
+			},
+			{
+				"pagePath":"pages/profile/profile",
+				"text":"我的",
+				"iconPath":"static/img/tab-my.png",
+				"selectedIconPath":"static/img/tab-my-active.png"
+			}
+		]
+	},
+	"easycom": {
+		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
 	},
 	"condition": { //模式配置，仅开发期间生效
 	    "current": 0, //当前激活的模式（list 的索引项）
@@ -74,8 +143,8 @@
 				// }
 				{
 					"name": "my", //模式名称
-					"path": "pages/invite/invite",
-					"query": "info={\"team_id\":\"1d1104975e9b1d9f0074bea92c419de1\",\"team_name\":\"1234\",\"master\":\"James💤\"}"
+					"path": "pages/notice/notice-detail",
+					"query":  "info={\"notice_id\":\"79550af2600c72ca009f85296d162f63\",\"master\":\"James💤\",\"team_id\":\"54bac78c5ec7ac490014006f16f1a2fa\",\"team_name\":\"东非大裂谷\"}"
 				}
 	    ]
 	}

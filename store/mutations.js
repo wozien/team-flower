@@ -15,6 +15,12 @@ const mutations = {
 	},
 	[types.SET_TEAM](state, team) {
 		state.team = team;
+	},
+	[types.SET_MODE](state, mode) {
+		state.team.mode = mode;
+	},
+	[types.SET_ONSHOW_TRIGGER](state, status) {
+		state.triggerShowHook = status;
 	}
 }
 

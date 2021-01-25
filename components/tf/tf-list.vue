@@ -29,13 +29,13 @@
 					</view>
 					
 					<view class="list-item-del" @click.stop="delItem(item)">
-						<text class="iconfont icontrash"></text>
+						<text class="tf-icon tf-icon-trash"></text>
 					</view>
 				</movable-view>
 			</movable-area>
 		</view>
 		
-		
+		<u-empty v-if="!listData.length" text="暂无搜索结果" src="/static/img/no-search-result.png" :icon-size="240"></u-empty>
 	</view>
 </template>
 

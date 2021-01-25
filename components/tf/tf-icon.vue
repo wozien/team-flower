@@ -1,6 +1,6 @@
 <template>
-	<text class="tf-icon iconfont" 
-	 :class="'icon' + icon" @click="$emit('click')"
+	<text class="tf-icon" 
+	 :class="'tf-icon-' + icon" @click="$emit('click')"
 	 :style="{ fontSize: size + 'px' }"
 	 ></text>
 </template>
@@ -20,7 +20,7 @@
 </script>
 
 <style>
-	.tf-icon {
+	.tf-icon{
 		font-size: 32rpx;
 		margin-right: 12rpx;
 		text-align: center;

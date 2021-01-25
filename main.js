@@ -5,6 +5,9 @@ import TfButton from '@/components/tf/tf-button.vue';
 import TfIcon from '@/components/tf/tf-icon.vue';
 import TfAvatar from '@/components/tf/tf-avatar.vue';
 import TfLoading from '@/components/tf/tf-loading.vue';
+import uView from 'uview-ui';
+
+Vue.use(uView);
 
 Vue.config.productionTip = false
 Vue.prototype.$store = store;

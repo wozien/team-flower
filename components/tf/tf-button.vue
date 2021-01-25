@@ -1,11 +1,15 @@
 <template>
 	<button 
 	   class="tf-button"
-		:class="['tf-button-' + type, { 'tf-button-small': size === 'small'}]"
+		:class="[
+			'tf-button-' + type,
+			{ 'tf-button-small': size === 'small', 'tf-button-plain': plain}
+		]"
 		:style="{width: width ? width + 'px' : ''}"
 		:open-type="openType || ''"
-		@click="$emit('click')">
-		<text v-if="icon" class="iconfont" :class="'icon' + icon"></text>
+		:loading="loading"
+		@click="onClick">
+		<text v-if="icon" class="tf-icon" :class="'tf-icon-' + icon"></text>
 		<slot></slot>
 	</button>
 </template>
@@ -22,7 +26,16 @@
 			size: String,
 			width: Number,
 			icon: String,
-			openType: String
+			openType: String,
+			plain: Boolean,
+			loading: Boolean
+		},
+		
+		methods: {
+			onClick() {
+				if(this.loading) return;
+				this.$emit('click');
+			}
 		}
 	}
 </script>
@@ -38,7 +51,7 @@
 		padding: 4px 0px;
 		border: 1px solid #eee;
 		background-color: #fff;
-		>text {
+		text {
 			font-size: 36rpx;
 			margin-right: 6px;
 		}
@@ -49,11 +62,20 @@
 			color: #fff;
 			background-color: $color-primary;
 			border-color: $color-primary;
+			&.tf-button-plain {
+				color: $color-primary;
+			}
 		}
 		&.tf-button-assia {
 			color: #fff;
-			background-color: #FF6600;
-			border-color: #FF6600;
+			background-color: $color-assistant-1;
+			border-color: $color-assistant-1;
+			&.tf-button-plain {
+				color: $color-assistant-1;
+			}
+		}
+		&.tf-button-plain {
+			background-color: #fff;
 		}
 		&.tf-button-small {
 			font-size: 24rpx;

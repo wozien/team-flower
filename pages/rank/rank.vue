@@ -3,7 +3,9 @@
 		<view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 		<view class="menu" slot="left" @click="visible=true">
 			<tf-icon icon="menu"></tf-icon>
-			<text>{{ team.name }}</text>
+			<text class="name">{{ team.name }}</text>
+			<u-tag v-if="isHelpMode" text="互助" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
+			<u-tag v-else text="管控" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
 		</view>
 		<view class="content" :style="{ height: contentHeight + 'px' }">
 			<tf-layout :height="contentHeight" :show-footer="false">
@@ -29,10 +31,6 @@
 				
 				<!-- 排名列表 -->
 				<tf-list :members="queryMembers" :is-master="isMaster" @delete="delItem"></tf-list>
-				
-				<!-- <view slot="footer" class="footer">
-					<tf-button type="primary" size="small" :width="200" open-type="share">邀请好友加入</tf-button>
-				</view> -->
 			</tf-layout>
 		</view>
 		
@@ -59,7 +57,8 @@
 					</view>
 				</view>
 			</scroll-view>
-			<tf-button v-if="isMaster" type="primary" :width="140" size="small" @click="setQuota">设置小红花额度</tf-button>
+			<!-- <tf-button v-if="isMaster" type="primary" :width="140" size="small" @click="setQuota">设置小红花额度</tf-button> -->
+			<tf-button v-if="isMaster" type="primary"  :width="140" size="small" open-type="share">邀请好友加入</tf-button>
 			<tf-button :width="140" size="small" @click="createTeam">创建新团队</tf-button>
 		</uni-drawer>
 		
@@ -69,19 +68,17 @@
 <script>
 	import TfLayout from '@/components/tf/tf-layout.vue';
 	import TfList from '../../components/tf/tf-list.vue';
-	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
 	import { mapState, mapMutations } from 'vuex';
 	import { getTeam, getMyTeams } from '@/common/js/db.js';
 	
 	const systemInfo = uni.getSystemInfoSync();
-	const statusBarHeight = systemInfo.statusBarHeight
-	const contentHeight = systemInfo.screenHeight - 40 - statusBarHeight
+	const statusBarHeight = systemInfo.statusBarHeight;
+	const contentHeight = systemInfo.windowHeight - 40 - statusBarHeight;
 	
 	export default {
 		components: {
 			TfLayout,
-			TfList,
-			uniDrawer
+			TfList
 		},
 		
 		data() {
@@ -109,13 +106,16 @@
 				return this.team.master_id === this.openid;
 			},
 			teamsScrollHeight() {
-				let res = systemInfo.screenHeight - 190 -statusBarHeight;
+				let res = systemInfo.windowHeight - 180 -statusBarHeight;
 				if(!this.isMaster) {
 					res += 46;
 				}
 				return res;
 			},
-			...mapState(['team', 'openid'])
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
+			...mapState(['team', 'openid', 'userInfo'])
 		},
 		
 		watch: {
@@ -125,11 +125,35 @@
 			}
 		},
 		
-		onLoad({team_id}) {
-			this.team_id = team_id;
+		onLoad() {
+			if(!this.openid) {
+				// 未登录或者未授权
+				uni.navigateTo({
+					url: '../index/index'
+				})
+				return;
+			}
+			
+			uni.getSetting({
+				success: res => {
+					if(res.authSetting['scope.userInfo']) {
+						uni.getUserInfo({
+							success: res => {
+								this.setUserInfo(res.userInfo);
+							}
+						})
+					} else {
+						uni.navigateTo({
+							url: '../index/index'
+						})
+					}
+				}
+			})
 		},
 		
 		onShow() {
+			if(!this.openid) return;
+			this.team_id = uni.getStorageSync('TEAM_ID');
 			getMyTeams(this.openid).then(res => {
 				this.teams = res || [];
 				if(this.teams.length) {
@@ -138,6 +162,7 @@
 					if(!this.team_id || index < 0) {
 						this.team_id = this.teams[0].id;
 					}
+					this.setTeams(this.teams);
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
@@ -170,6 +195,7 @@
 					if(!this.team_id || index < 0) {
 						this.team_id = this.teams[0].id;
 					}
+					this.setTeams(this.teams);
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
@@ -177,6 +203,12 @@
 					});
 				}
 			});
+		},
+		
+		created() {
+			// 从分享的公告页进入排行页面高度需要重新计算一下
+			const systemInfo = uni.getSystemInfoSync();
+			this.contentHeight = systemInfo.windowHeight - 40 - systemInfo.statusBarHeight;
 		},
 		
 		methods: {
@@ -218,15 +250,6 @@
 			createTeam() {
 				uni.navigateTo({
 					url: '../index/index?is_create=1',
-					success: () => {
-						this.hideDrawer();
-					}
-				});
-			},
-			
-			setQuota() {
-				uni.navigateTo({
-					url: '../quota/quota?team_id=' + this.team._id,
 					success: () => {
 						this.hideDrawer();
 					}
@@ -290,7 +313,9 @@
 			},
 			
 			...mapMutations({
-				setTeam: 'SET_TEAM'
+				setTeam: 'SET_TEAM',
+				setTeams: 'SET_MY_TEAMS',
+				setUserInfo: 'SET_USERINFO'
 			})
 		}
 	}
@@ -310,8 +335,12 @@
 			background-color: $color-primary;
 			color: #fff;
 			text-align: left;
-			line-height: 40px;
 			padding-left: 8px;
+			display: flex;
+			align-items: center;
+			.name {
+				margin-right: 8px;
+			}
 		}
 		.content{
 			.header {

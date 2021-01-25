@@ -14,6 +14,7 @@
 </script>
 
 <style lang="scss">
+	@import "uview-ui/index.scss";
 	page {
 		height: 100%;
 		background-color: $bg-color;
@@ -24,5 +25,8 @@
 	}
 	page, view {
 		box-sizing: border-box;
+	}
+	.tf-page {
+		height: 100%;
 	}
 </style>

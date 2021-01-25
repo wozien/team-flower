@@ -1,6 +1,6 @@
 <template>
 	<view class="rank-detail">
-		<tf-layout :mg-top="60" @scroll-lower="toScrollLower" :loading="loading">
+		<tf-layout :mg-top="60" @scroll-lower="toScrollLower" :loading="loading" :show-footer="showFooter">
 			<view class="member" slot="header">
 				<tf-avatar :url="member.avatar" class="avatar" size="large"></tf-avatar>
 				<view class="name-and-rank">
@@ -21,10 +21,11 @@
 						<view class="dot"></view>
 					</view>
 					<view class="record" v-if="!item.last">
-						<text class="number" :class="{'number-add': item.add}">
+						<text class="number" :class="{'number-add': item.add}" v-if="!item.isSystem">
 							{{ (item.add ? '+ ' : '- ') + item.number }}
 						</text>
-						<view class="message">
+						<view v-if="item.isSystem" class="system-message">{{ item.message }}</view>
+						<view class="message" v-else>
 							<tf-icon icon="quote-left" style="color: #9b9b9b" :size="12"></tf-icon>
 							<text>{{ item.message }}</text>
 							<tf-icon icon="quote-right" style="margin-left: 4px;color: #9b9b9b;" :size="12"></tf-icon>
@@ -44,7 +45,7 @@
 				<tf-button v-if="isMaster && !isSelf" :width="125" size="small" icon="close" type="primary"
 				 style="margin-right: 16px;" @click="updateFlower(false)">扣除</tf-button>
 				<tf-button v-if="isSelf" :width="125" size="small" icon="update" @click="rename" type="primary">修改昵称</tf-button>
-				<tf-button v-else :width="125" size="small" icon="aixin" type="assia" @click="updateFlower(true)">感谢</tf-button>
+				<tf-button v-else-if="isHelpMode || isMaster" :width="125" size="small" icon="aixin" type="assia" @click="updateFlower(true)">感谢</tf-button>
 			</view>
 		</tf-layout>
 	</view>
@@ -75,6 +76,12 @@
 			},
 			isMaster() {
 				return this.team.master_id === this.openid;
+			},
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
+			showFooter() {
+				return this.isMaster || this.isSelf || this.isHelpMode;
 			},
 			...mapState(['team', 'openid'])
 		},
@@ -168,9 +175,19 @@
 			
 			formatHistory(data) {
 				data.forEach(item => {
-					const data = this.team.members.find(mb => mb.openid === item.from);
-					if(data) {
-						item.from = data;
+					if(item.from === 'SYSTEM') {
+						// 系统的操作的log
+						item.isSystem = true;
+						switch(item.message) {
+							case 'RESET_FLOWERS':
+								item.message = '管理员重置了小红花排行榜，小红花数量归零'; break;
+							default: break;
+						}
+					} else {
+						const data = this.team.members.find(mb => mb.openid === item.from);
+						if(data) {
+							item.from = data;
+						}
 					}
 					item.date = this.formatDate(new Date(item.date));
 				})
@@ -328,6 +345,11 @@
 							color: #999;
 							font-size: 26rpx;
 						}
+					}
+					.system-message {
+						font-size: 24rpx;
+						color: #999;
+						padding: 10px;
 					}
 				}
 				.last {
