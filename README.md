@@ -30,4 +30,4 @@ uni-app + 小程序云开发
 
 ## 友链
 
-![团队小红花](https://blog.inoob.xyz/team-flower.jpg)
+![团队小红花](https://blog.inoob.xyz/team-flower-code.jpg)
