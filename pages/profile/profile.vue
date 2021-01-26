@@ -32,6 +32,9 @@
 				<button slot="title" open-type="feedback" class="feedback">留言反馈</button>
 			</u-cell-item>
 		</u-cell-group>
+	
+		<!-- tabbar -->
+		<u-tabbar :list="tabbarList" active-color="#7F83BB" inactive-color="#999999" bg-color="#fff"></u-tabbar>
 	</view>
 </template>
 
@@ -53,7 +56,7 @@
 			isMaster() {
 				return this.team.master_id === this.openid;
 			},
-			...mapState(['team', 'openid'])
+			...mapState(['team', 'openid', 'tabbarList'])
 		},
 		
 		onShow() {
@@ -142,7 +145,7 @@
 
 <style lang="scss">
 .profile-page {
-	height: 100%;
+	height: calc(100% - 50px - env(safe-area-inset-bottom));
 	background-color: #fff;
 	.header {
 		overflow: hidden;
@@ -151,6 +154,8 @@
 		.bg {
 			background-color: $color-primary;
 			height: 70px;
+			border-bottom-left-radius: 20px;
+			border-bottom-right-radius: 20px;
 		}
 		.info {
 			background-color: #fff;
@@ -160,7 +165,7 @@
 			left: 20px;
 			right: 20px;
 			bottom: 4px;
-			box-shadow: 4px 4px 4px -4px #ccc;
+			box-shadow: 0px 4px 8px -4px #ccc;
 			display: flex;
 			align-items: center;
 			padding: 0px 30px;

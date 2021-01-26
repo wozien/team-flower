@@ -1,4 +1,6 @@
 <script>
+	import { mapMutations } from 'vuex';
+	
 	export default {		
 		onLaunch(e) {	
 			if (!wx.cloud) {
@@ -7,8 +9,26 @@
 				wx.cloud.init({
 					env: 'mpyun-0ll9s',
 					traceUser: true,
-				})
+				});
+				
+				this._setTarbar();
 			}
+		},
+		
+		methods: {
+			_setTarbar() {
+				const db = wx.cloud.database();
+				const configCollection = db.collection('config');
+				configCollection.doc('28ee4e3e601031110129bcf56a6d81ac').get().then(({ data }) => {
+					if(data.notice) {
+						this.addNoticeTab();
+					}
+				})
+			},
+			
+			...mapMutations({
+				addNoticeTab: 'ADD_NOTICE_TAB'
+			})
 		}
 	}
 </script>

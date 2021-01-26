@@ -5,6 +5,7 @@
 			"style":{
 				"navigationStyle": "custom",
 				"enablePullDownRefresh": true
+				// "disableScroll": true
 			}
 		},
 		{
@@ -106,27 +107,15 @@
 		"backgroundColor":"#7F83BB"
 	},
 	"tabBar": {
-		"color":"#999999",
-		"selectedColor":"#7F83BB",
-		"backgroundColor":"#fff",
 		"list":[
 			{
-				"pagePath":"pages/rank/rank",
-				"text":"排行榜",
-				"iconPath":"static/img/tab-rank.png",
-				"selectedIconPath":"static/img/tab-rank-active.png"
+				"pagePath":"pages/rank/rank"
 			},
 			{
-				"pagePath":"pages/notice/notice",
-				"text":"公告",
-				"iconPath":"static/img/tab-notice.png",
-				"selectedIconPath":"static/img/tab-notice-active.png"
+				"pagePath": "pages/notice/notice"
 			},
 			{
-				"pagePath":"pages/profile/profile",
-				"text":"我的",
-				"iconPath":"static/img/tab-my.png",
-				"selectedIconPath":"static/img/tab-my-active.png"
+				"pagePath":"pages/profile/profile"
 			}
 		]
 	},
