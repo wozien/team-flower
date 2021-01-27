@@ -2,7 +2,7 @@
 	<view class="create-page">
 			<text>请输入你的团队名称</text>
 			<input type="text" :focus="true" v-model="name"/>
-			<tf-button type="primary" class="create-btn" @click="onCreate">立即创建</tf-button>
+			<tf-button type="primary" class="create-btn" :loading="loading" @click="$u.debounce(onCreate, 600, true)">立即创建</tf-button>
 	</view>
 </template>
 
@@ -16,7 +16,8 @@
 		
 		data() {
 			return {
-				name: ''
+				name: '',
+				loading: false
 			}
 		},
 		
@@ -33,9 +34,23 @@
 		methods:{
 			onCreate() {
 				if(this.name) {
-					getMyTeams(this.openid).then(teams => {
+					this.loading = true;
+					wx.cloud.callFunction({
+						name: 'check',
+						data: {
+							type: 'check_msg',
+							params: {
+								content: this.name
+							}
+						}
+					}).then(({ result }) => {
+						if(result.code !== 0) {
+							return Promise.reject(result.msg);
+						}	
+						return getMyTeams(this.openid);
+					}).then(teams => {
 						// 最多创建5个团队
-						if(teams.length === 5) {
+						if(teams.length >= 5) {
 							return Promise.reject('最多只能创建5个团队哦~');
 						}
 						const index = teams.findIndex(team => team.name === this.name);
@@ -60,7 +75,8 @@
 						});
 					}).catch(reason => {
 						this.$toast(reason);
-					});
+					}).finally(() => this.loading = false);
+					
 				} else {
 					this.$toast('团队名不能为空');
 				}	
