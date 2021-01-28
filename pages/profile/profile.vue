@@ -32,6 +32,9 @@
 				<button slot="title" open-type="feedback" class="feedback">留言反馈</button>
 			</u-cell-item>
 		</u-cell-group>
+	
+		<!-- tabbar -->
+		<u-tabbar :list="tabbarList" active-color="#7F83BB" inactive-color="#999999" bg-color="#fff"></u-tabbar>
 	</view>
 </template>
 
@@ -39,13 +42,7 @@
 	import { mapState } from 'vuex';
 	import { getCollection } from '../../common/js/db.js';
 	
-	export default {
-		data() {
-			return {
-				
-			};
-		},
-		
+	export default {		
 		computed: {
 			my() {
 				return this.team.members.find(member => member.openid === this.openid)
@@ -53,15 +50,12 @@
 			isMaster() {
 				return this.team.master_id === this.openid;
 			},
-			...mapState(['team', 'openid'])
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
+			...mapState(['team', 'openid', 'tabbarList'])
 		},
-		
-		onShow() {
-			// uni.setNavigationBarTitle({
-			// 	title: this.team.name
-			// })
-		},
-		
+
 		methods: {
 			onSwitchTeam() {
 				uni.navigateTo({
@@ -71,6 +65,10 @@
 			
 			onSetQuota() {
 				if(!this._checkPeimission()) return;
+				if(!this.isHelpMode) {
+					this.$toast('当前是管控模式，普通员工不能互赠红花，不需要设置小红花额度');
+					return;
+				}
 				uni.navigateTo({
 					url: '../quota/quota?team_id=' + this.team._id
 				});
@@ -142,7 +140,7 @@
 
 <style lang="scss">
 .profile-page {
-	height: 100%;
+	height: calc(100% - 50px - env(safe-area-inset-bottom));
 	background-color: #fff;
 	.header {
 		overflow: hidden;
@@ -151,6 +149,8 @@
 		.bg {
 			background-color: $color-primary;
 			height: 70px;
+			border-bottom-left-radius: 20px;
+			border-bottom-right-radius: 20px;
 		}
 		.info {
 			background-color: #fff;
@@ -160,7 +160,7 @@
 			left: 20px;
 			right: 20px;
 			bottom: 4px;
-			box-shadow: 4px 4px 4px -4px #ccc;
+			box-shadow: 0px 4px 8px -4px #ccc;
 			display: flex;
 			align-items: center;
 			padding: 0px 30px;

@@ -10,3 +10,5 @@ export const SET_TEAM = 'SET_TEAM';
 export const SET_MODE = 'SET_MODE';
 
 export const SET_ONSHOW_TRIGGER = 'SET_ONSHOW_TRIGGER';
+
+export const ADD_NOTICE_TAB = 'ADD_NOTICE_TAB';

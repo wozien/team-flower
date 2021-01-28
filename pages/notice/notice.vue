@@ -40,12 +40,20 @@
 		<view class="add-btn" v-if="isMaster" @click="onAdd">
 			<text class="tf-icon tf-icon-plus"></text>
 		</view>
+		
+		<!-- tabbar -->
+		<u-tabbar :list="tabbarList" active-color="#7F83BB" inactive-color="#999999" bg-color="#fff"></u-tabbar>
 	</view>
 </template>
 
 <script>
 	import { mapState } from 'vuex';
 	import { formatDate } from '../../common/js/utils.js';
+	
+	const tabbarHeight = 50;
+	const systemInfo = uni.getSystemInfoSync();
+	const safeBottomHeight = systemInfo.screenHeight - systemInfo.safeArea.bottom;
+	const contentHeight = systemInfo.windowHeight - 50 - safeBottomHeight;
 
 	export default {
 		data() {
@@ -63,7 +71,7 @@
 			isMaster() {
 				return this.team.master_id === this.openid;
 			},
-			...mapState(['team', 'openid', 'userInfo'])
+			...mapState(['team', 'openid', 'userInfo', 'tabbarList'])
 		},
 		
 		watch: {
@@ -182,8 +190,10 @@
 </script>
 
 <style lang="scss">
+	
 .notice-page {
 	background-color: #fff;
+	height: calc(100% - 50px - env(safe-area-inset-bottom));
 }
 
 .list-wrapper{
@@ -268,7 +278,7 @@
 	background-color: $color-primary;
 	position: fixed;
 	right: 10px;
-	bottom: 10px;
+	bottom: calc(60px + env(safe-area-inset-bottom));
 	.tf-icon {
 		color: #fff;
 		font-size: 40rpx;

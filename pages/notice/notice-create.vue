@@ -54,10 +54,17 @@ export default {
 	},
 	
 	methods: {
-		_getFileName(url) {
+		_getExt(url) {
 			const matches = /\.\w+$/i.exec(url);
-			const ext = matches && matches[0] || '.jpg';
-			return this.team._id + '_' + this.$u.guid(16) + ext;
+			return matches && matches[0] || '.jpg';
+		},
+		
+		_getFileName(url) {
+			return this.team._id + '_' + this.$u.guid(16) + this._getExt(url);
+		},
+		
+		_getMimeType(url) {
+			return 'image/' + this._getExt(url).slice(1); 
 		},
 		
 		loadData() {
@@ -74,24 +81,35 @@ export default {
 			})
 		},
 		
-		afterRead(files) {
-			const getFileName = this.getFileName;
-			
+		afterRead(files) {			
 			if(files.length) {
 				files.forEach(file => {
-					const fileName = this._getFileName(file.url);
-					
-					// 上传云存储
-					wx.cloud.uploadFile({
-						cloudPath: 'team-flower/notice-images/' + fileName,
-						filePath: file.url
-					}).then(res => {
-						file.fileID = res.fileID
-						file.status = 'done'
-					}).catch(e => {
-						file.status = 'error'
-						console.log(e.message)
-					})
+					if(file.status === 'uploading') {
+						const mimeType = this._getMimeType(file.url);
+						// 图片安全检测
+						wx.cloud.callFunction({
+							name: 'check',
+							data: {
+								type: 'check_img',
+								params: {
+									mimeType,
+									img: wx.cloud.CDN({
+										type: 'filePath',
+										filePath: file.url
+									})
+								}
+							}
+						}).then(({ result }) => {
+							if(result.code !== 0) {
+								file.status = 'error'
+								file.msg = result.msg || '违规图片'
+							} else {
+								file.status = 'done'
+							}
+						}).catch(e => {
+							console.log(e)
+						})
+					}
 				});
 			}
 		},
@@ -101,65 +119,77 @@ export default {
 				this.$toast('标题不能为空'); return;
 			} 
 			
-			const images = this.fileList.map(file => {
-				return file.status === 'done' && file.fileID;
-			})
-			
-			let prom, data;
-			if(this.notice_id) {
-				// update notice
-				data = {
-					title: this.title,
-					content: this.content,
-					date: Date.now(),
-					images
-				};
-				prom = this._updateNotice(data);
-			} else {
-				data = {
-					title: this.title,
-					content: this.content,
-					team_id: this.team._id,
-					date: Date.now(),
-					avatar: this.userInfo.avatarUrl,
-					creator: this.userInfo.nickName,
-					likes: [],
-					images
-				};
-				prom = this._createNotice(data);
-			}
-
-			this.loading = true;
-			return prom.then(() => {
+			const content = this.title + this.content;  // 校验文本
+			this.loading = true
+			wx.cloud.callFunction({
+				name: 'check',
+				data: {
+					type: 'check_msg',
+					params: {
+						content
+					}
+				}
+			}).then(({ result }) => {
+				if(result.code !== 0) return Promise.reject(result.msg);
+				
+				const hasError = this.fileList.find(file => file.status === 'error');
+				if(hasError) {
+					return Promise.reject('存在不合法图片');
+				}
+				
+				const defs =  this.fileList.map(file => {
+					if(file.fileID) {
+						return Promise.resolve(file.fileID);
+					}
+					// 上传云存储
+					const fileName = this._getFileName(file.url);
+					return wx.cloud.uploadFile({
+						cloudPath: 'team-flower/notice-images/' + fileName,
+						filePath: file.url
+					}).then(res => res.fileID)
+				});
+				return Promise.all(defs);
+				
+			}).then(images => {
+				let prom, data;
+				if(this.notice_id) {
+					// update notice
+					data = {
+						title: this.title,
+						content: this.content,
+						date: Date.now(),
+						images
+					};
+					prom = this._updateNotice(data);
+				} else {
+					data = {
+						title: this.title,
+						content: this.content,
+						team_id: this.team._id,
+						date: Date.now(),
+						avatar: this.userInfo.avatarUrl,
+						creator: this.userInfo.nickName,
+						likes: [],
+						images
+					};
+					prom = this._createNotice(data);
+				}
+				return prom;
+			}).then(() => {
 				this.$toast('发布成功').then(() => {
 					this.loading = false;
 					setTimeout(() => {
 						uni.navigateBack({});
 					}, 600);
 				});
-			}).catch(e => {
+			}).catch(msg => {
 				this.loading = false;
-				this.$toast('发布失败: ' + e.message);
+				this.$toast('发布失败: ' + msg);
 			});
 		},
 		
-		onDeleteImg(file) {
-			const fileID = file && file.fileID;
-			const index = this.fileList.findIndex(file => file.fileID === fileID);
-			if(index > -1) {
-				this.fileList.splice(index, 1);
-			}
-			
-			if(fileID) {
-				// 调用云函数函数图片文件
-				wx.cloud.deleteFile({
-					fileList: [fileID]
-				}).then(res => {
-					// console.log(res)
-				}).catch(e => {
-					this.$toast(e.message);
-				})
-			}
+		onDeleteImg(file, index) {
+			this.fileList.splice(index, 1);
 		},
 		
 		_createNotice(data) {

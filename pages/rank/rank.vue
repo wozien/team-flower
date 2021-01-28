@@ -62,6 +62,8 @@
 			<tf-button :width="140" size="small" @click="createTeam">创建新团队</tf-button>
 		</uni-drawer>
 		
+		<!-- tabbar -->
+		<u-tabbar :list="tabbarList" active-color="#7F83BB" inactive-color="#999999" bg-color="#fff"></u-tabbar>
 	</view>
 </template>
 
@@ -69,11 +71,14 @@
 	import TfLayout from '@/components/tf/tf-layout.vue';
 	import TfList from '../../components/tf/tf-list.vue';
 	import { mapState, mapMutations } from 'vuex';
-	import { getTeam, getMyTeams } from '@/common/js/db.js';
+	import { getTeam, getMyTeams, getCollection } from '@/common/js/db.js';
 	
+	const menuHeight = 40;
+	const tabbarHeight = 50;
 	const systemInfo = uni.getSystemInfoSync();
 	const statusBarHeight = systemInfo.statusBarHeight;
-	const contentHeight = systemInfo.windowHeight - 40 - statusBarHeight;
+	const safeBottomHeight = systemInfo.screenHeight - systemInfo.safeArea.bottom;
+	const contentHeight = systemInfo.screenHeight - statusBarHeight - menuHeight - tabbarHeight - safeBottomHeight;
 	
 	export default {
 		components: {
@@ -106,7 +111,7 @@
 				return this.team.master_id === this.openid;
 			},
 			teamsScrollHeight() {
-				let res = systemInfo.windowHeight - 180 -statusBarHeight;
+				let res = systemInfo.screenHeight - 190 - statusBarHeight;
 				if(!this.isMaster) {
 					res += 46;
 				}
@@ -115,7 +120,7 @@
 			isHelpMode() {
 				return !this.team.mode || this.team.mode === 'HELP';
 			},
-			...mapState(['team', 'openid', 'userInfo'])
+			...mapState(['team', 'openid', 'userInfo', 'tabbarList'])
 		},
 		
 		watch: {
@@ -126,6 +131,8 @@
 		},
 		
 		onLoad() {
+			// this._setTarbar();
+			
 			if(!this.openid) {
 				// 未登录或者未授权
 				uni.navigateTo({
@@ -150,7 +157,7 @@
 				}
 			})
 		},
-		
+				
 		onShow() {
 			if(!this.openid) return;
 			this.team_id = uni.getStorageSync('TEAM_ID');
@@ -203,12 +210,6 @@
 					});
 				}
 			});
-		},
-		
-		created() {
-			// 从分享的公告页进入排行页面高度需要重新计算一下
-			const systemInfo = uni.getSystemInfoSync();
-			this.contentHeight = systemInfo.windowHeight - 40 - systemInfo.statusBarHeight;
 		},
 		
 		methods: {
@@ -312,10 +313,23 @@
 				});
 			},
 			
+			/**
+			 * 小程序审核hack代码，根据后台配置动态显示公告的tab
+			 */
+			_setTarbar() {
+				const configCollection = getCollection('config');
+				configCollection.doc('28ee4e3e601031110129bcf56a6d81ac').get().then(({ data }) => {
+					if(data.notice) {
+						this.addNoticeTab();
+					}
+				})
+			},
+			
 			...mapMutations({
 				setTeam: 'SET_TEAM',
 				setTeams: 'SET_MY_TEAMS',
-				setUserInfo: 'SET_USERINFO'
+				setUserInfo: 'SET_USERINFO',
+				addNoticeTab: 'ADD_NOTICE_TAB'
 			})
 		}
 	}
