@@ -1,7 +1,7 @@
 <template>
 	<view class="rename-page">
 		<input type="text" :focus="true" v-model="name" placeholder="请输入昵称" placeholder-style="color: #999"/>
-		<tf-button type="primary" class="btn" @click="rename">立即修改</tf-button>
+		<tf-button type="primary" class="btn" :loading="loading" @click="$u.debounce(rename, 600, true)">立即修改</tf-button>
 	</view>
 </template>
 
@@ -12,7 +12,7 @@
 	export default {
 		data() {
 			return {
-				name: ''
+				loading: false
 			}
 		},
 		
@@ -33,20 +33,37 @@
 					return;
 				}
 				
-				 wx.cloud.callFunction({
-					 name: 'team',
-					 data: {
-						 type: 'rename',
-						 params: {
-							 team_id: this.team._id,
-							 openid: this.openid,
-							 nickname: this.name
-						 }
-					 }
-				 }).then(res => {
-					 uni.$emit('rename', this.name);
-					 uni.navigateBack({});
-				 });
+				this.loading = true;
+				wx.cloud.callFunction({
+					name: 'check',
+					data: {
+						type: 'check_msg',
+						params: {
+							content: this.name
+						}
+					}
+				}).then(({ result }) => {
+					if(result.code !== 0) {
+						return Promise.reject(result.msg);
+					}	
+					
+					return wx.cloud.callFunction({
+						name: 'team',
+						data: {
+							type: 'rename',
+							params: {
+								team_id: this.team._id,
+								openid: this.openid,
+								nickname: this.name
+							}
+						}
+					});
+				}).then(res => {
+					uni.$emit('rename', this.name);
+					uni.navigateBack({});
+				}).catch(reason => {
+					this.$toast(reason);
+				}).finally(() => this.loading = false);
 			}
 		}
 	}

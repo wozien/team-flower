@@ -55,12 +55,9 @@
 				const count = this.maxCount - this.list.length;
 				uni.chooseImage({
 					count,
-					sizeType: ['original', 'compressed'],
-					sourceType: ['album', 'camera'],
 					success: res => {						
 						const files = res.tempFiles.map(file => {
 							const res = { url: file.path, status: 'uploading' };
-							console.log(file.size, this.maxSize);
 							if(file.size > this.maxSize) {
 								res.status = 'error';
 								res.msg = '图片大于1M';

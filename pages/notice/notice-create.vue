@@ -85,31 +85,29 @@ export default {
 			if(files.length) {
 				files.forEach(file => {
 					if(file.status === 'uploading') {
-						wx.getFileSystemManager().readFile({
-							filePath: file.url,
-							success: res => {
-								const mimeType = this._getMimeType(file.url);
-								// 图片安全检测
-								wx.cloud.callFunction({
-									name: 'check',
-									data: {
-										type: 'check_img',
-										params: {
-											mimeType,
-											img: res.data
-										}
-									}
-								}).then(({ result }) => {
-									if(result.code !== 0) {
-										file.status = 'error'
-										file.msg = result.msg || '违规图片'
-									} else {
-										file.status = 'done'
-									}
-								}).catch(e => {
-									console.log(e)
-								})
+						const mimeType = this._getMimeType(file.url);
+						// 图片安全检测
+						wx.cloud.callFunction({
+							name: 'check',
+							data: {
+								type: 'check_img',
+								params: {
+									mimeType,
+									img: wx.cloud.CDN({
+										type: 'filePath',
+										filePath: file.url
+									})
+								}
 							}
+						}).then(({ result }) => {
+							if(result.code !== 0) {
+								file.status = 'error'
+								file.msg = result.msg || '违规图片'
+							} else {
+								file.status = 'done'
+							}
+						}).catch(e => {
+							console.log(e)
 						})
 					}
 				});
@@ -192,18 +190,6 @@ export default {
 		
 		onDeleteImg(file, index) {
 			this.fileList.splice(index, 1);
-			
-			// const fileID = file && file.fileID;
-			// if(fileID) {
-			// 	// 调用云函数函数图片文件
-			// 	wx.cloud.deleteFile({
-			// 		fileList: [fileID]
-			// 	}).then(res => {
-			// 		// console.log(res)
-			// 	}).catch(e => {
-			// 		this.$toast(e.message);
-			// 	})
-			// }
 		},
 		
 		_createNotice(data) {

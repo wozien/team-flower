@@ -42,13 +42,7 @@
 	import { mapState } from 'vuex';
 	import { getCollection } from '../../common/js/db.js';
 	
-	export default {
-		data() {
-			return {
-				
-			};
-		},
-		
+	export default {		
 		computed: {
 			my() {
 				return this.team.members.find(member => member.openid === this.openid)
@@ -56,15 +50,12 @@
 			isMaster() {
 				return this.team.master_id === this.openid;
 			},
+			isHelpMode() {
+				return !this.team.mode || this.team.mode === 'HELP';
+			},
 			...mapState(['team', 'openid', 'tabbarList'])
 		},
-		
-		onShow() {
-			// uni.setNavigationBarTitle({
-			// 	title: this.team.name
-			// })
-		},
-		
+
 		methods: {
 			onSwitchTeam() {
 				uni.navigateTo({
@@ -74,6 +65,10 @@
 			
 			onSetQuota() {
 				if(!this._checkPeimission()) return;
+				if(!this.isHelpMode) {
+					this.$toast('当前是管控模式，普通员工不能互赠红花，不需要设置小红花额度');
+					return;
+				}
 				uni.navigateTo({
 					url: '../quota/quota?team_id=' + this.team._id
 				});
