@@ -5,130 +5,54 @@
 			<text>也许你该试试更年轻的管理方式</text>
 			<text class="name">--- 团队小红花</text>
 		</view>
-		<button 
-			v-if="!hasAuth"
-			class="btn" 
-			open-type="getUserInfo"
-			@click="subscribe"
-		  @getuserinfo="onGetUserInfo"
-		>授权登录</button>
-		<button v-else class="btn" @click="onCreate">立即创建团队</button>
+		<button class="btn" @click="onCreate">立即进入</button>
 	</view>
 </template>
 
 <script>
 	import { mapState, mapActions, mapMutations } from 'vuex';
-	import { getMyTeams } from '@/common/js/db.js';
-	
-	let subscribeResolve;
-	let subscribeProm = new Promise((resolve) => subscribeResolve = resolve);
-	
+
 	export default {	
 		computed: {
-			hasAuth() {
-				return !!this.userInfo;
-			},
 			...mapState(['openid', 'userInfo'])
 		},
-			
-		onLoad({is_create}) {
-			this.is_create = is_create;
-			// 授权用户获取用户信息
+		
+		onLoad() {
 			uni.getSetting({
 				success: res => {
 					if(res.authSetting['scope.userInfo']) {
 						uni.getUserInfo({
 							success: res => {
 								this.setUserInfo(res.userInfo);
-								if(this.openid && !this.is_create) {
-									this._gotoRank();
-								}
 							}
 						})
-					}
+					} 
 				}
 			})
 		},
-		
+					
 		onShow() {		
-			// 登录成功查询我的团队数据
-			let prom;
-			if(!this.openid){
-				prom = this.login();	
-			} else {
-				prom = Promise.resolve(this.openid)
+			if(!this.openid) {
+				this.login();
 			}
-			
-			prom.then(openid => {
-				if(this.is_create || !this.userInfo)
-					return Promise.reject();
-				
-				return this._gotoRank();
-			})
 		},
 		
 		methods: {
-			onGetUserInfo(e) {		
-				// 授权成功
-				if(e.detail) {
-					this.setUserInfo(e.detail.userInfo);
-					
-					let prom = Promise.resolve();
-					if(!this.openid){
-						prom = this.login();	
-					}
-					
-					Promise.all([prom, subscribeProm]).then(() => {
-						if(!this.is_create) {
-							this._gotoRank();
-						}
-					});
-				}
-			},
-				
-			// 订阅消息
-			subscribe() {
-				wx.requestSubscribeMessage({
-					tmplIds: ['VuohxXh57VvHSkihzpk94WtkpuLiRL3XJFXXhttd6Sw', 'ct4NV_LQ7AhLpkulV-feI7AOFHnxgZJuI-X8a2aVlF8'],
-					complete(){
-						subscribeResolve();
-					}
-				});
-			},
-			
 			onCreate() {
-				uni.navigateTo({
-					url: '../create/create'
-				})
-			},
-			
-			// 对于已经授权并且不是创建队伍的情况 is_create=undefined
-			_gotoRank() {
-				let team_id = uni.getStorageSync('TEAM_ID');
-				let prom;
-				
-				if(team_id) {
-					prom = Promise.resolve(team_id);
+				if(this.userInfo) {
+					uni.navigateTo({
+						url: '../create/create'
+					})
 				} else {
-					prom = getMyTeams(this.openid).then(res => {
-						return res.length && res[0].id;
+					uni.navigateTo({
+						url: '../auth/auth'
 					})
 				}
-				
-				prom.then(team_id => {
-					if(team_id) {
-						uni.setStorageSync('TEAM_ID', team_id);
-						uni.switchTab({
-							url: '../rank/rank'
-						});
-					}
-				})
 			},
-			
+			...mapActions(['login']),
 			...mapMutations({
 				setUserInfo: 'SET_USERINFO'
-			}),
-			...mapActions(['login'])
+			})
 		}
 	}
 </script>

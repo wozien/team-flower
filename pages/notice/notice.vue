@@ -14,7 +14,12 @@
 			@refresherrefresh="onRefresh"
 		>
 			<view class="list-item" v-for="item in list" :key="item._id" @click="toDetail(item._id)">
-				<view class="title">{{ item.title }}</view>
+				<view class="title">
+					<text>{{ item.title }}</text>
+					<view @click.stop="onClickActionDot(item)">
+						<u-icon v-if="isMaster" name="more-dot-fill" color="#999" size="32"></u-icon>
+					</view>
+				</view>
 				<view class="content">{{ item.content }}</view>
 				<view class="images">
 					<view class="image" v-for="(img, index) in item.images" :key="img" @click.stop="previewImg(item.images, index)">
@@ -26,8 +31,8 @@
 						<tf-avatar :url="item.avatar" size="mini"></tf-avatar>
 						<text class="time">{{ `${item.creator} ${item.date} 发起` }}</text>
 					</view>
-					<view class="thumb" @click.stop="onLike(item)">
-						<text class="tf-icon tf-icon-like" :class="[item.hasLike && 'active']"></text>
+					<view class="thumb" :class="[item.hasLike && 'active']" @click.stop="onLike(item)">
+						<text class="tf-icon tf-icon-like"></text>
 						<text class="num">{{ item.thumbs }}</text>
 					</view>
 				</view>
@@ -40,6 +45,16 @@
 		<view class="add-btn" v-if="isMaster" @click="onAdd">
 			<text class="tf-icon tf-icon-plus"></text>
 		</view>
+		
+		<!-- action sheet -->
+		<u-action-sheet
+			:list="actionList"
+			v-model="showActionSheet" 
+			:cancel-btn="true" 
+			:tips="actionTip" 
+			:safe-area-inset-bottom="true"
+			@click="onClickActionSheet"
+		></u-action-sheet>
 		
 		<!-- tabbar -->
 		<u-tabbar :list="tabbarList" active-color="#7F83BB" inactive-color="#999999" bg-color="#fff"></u-tabbar>
@@ -63,7 +78,15 @@
 				refresh: true,
 				finished: false,
 				trigger: false,
-				scrollTop: 0
+				showActionSheet: false,
+				actionList: [
+					{ text: '编辑' },
+					{ text: '删除' },
+				],
+				actionTip: {
+					text: '公告操作',
+					color: '#999'
+				}
 			};
 		},
 		
@@ -171,6 +194,34 @@
 				this.loadData().then(() => this.trigger = false);
 			},
 			
+			onClickActionDot(item) {
+				this.actionNoticeId = item._id;
+				this.actionTip.text = item.title;
+				this.showActionSheet = true;
+			},
+			
+			onClickActionSheet(index) {
+				if(!this.actionNoticeId) return;
+				if(index === 0) {
+					uni.navigateTo({
+						url: 'notice-create?notice_id=' + this.actionNoticeId
+					})
+				} else if(index === 1) {
+					wx.cloud.callFunction({
+						name: 'notice',
+						data: {
+							type: 'delete_notice',
+							params: {
+								notice_id: this.actionNoticeId
+							}
+						}
+					}).then(res => {
+						this.$toast('删除成功')
+						this.onRefresh()
+					})
+				}
+			},
+			
 			_formatListData(list) {
 				list.forEach(item => {
 					item.images = item.images.slice(0, 3);
@@ -201,10 +252,15 @@
 	.list-item {
 		padding: 10px 16px;
 		.title {
-			font-size: 32rpx;
-			font-weight: bold;
-			color: $font-color;
+			display: flex;
+			align-items: center;
 			margin-bottom: 10px;
+			text {
+				font-size: 32rpx;
+				font-weight: bold;
+				color: $font-color;
+				flex: 1;
+			}
 		}
 		.content {
 			font-size: 28rpx;
@@ -248,11 +304,12 @@
 			}
 			.thumb {
 				flex: 0 0 auto;
-				.tf-icon.active {
-					color: $color-primary;
-				}
 				.num {
 					margin-left: 6px;
+				}
+				&.active {
+					color: $color-primary;
+					transition: color .25 ease;
 				}
 			}
 		}

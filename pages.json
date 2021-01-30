@@ -100,8 +100,15 @@
 					"disableScroll":true,
 					"navigationBarTitleText":"切换管理模式"
 			}
+		},
+		{
+			"path" : "pages/auth/auth",
+			"style" : {		
+				"navigationBarBackgroundColor": "#F7F7F7",
+				"disableScroll":true
+			}
 		}
-   ],
+  ],
 	"globalStyle": {
 		"navigationBarBackgroundColor": "#7F83BB",
 		"backgroundColor":"#7F83BB"
@@ -133,7 +140,7 @@
 				{
 					"name": "my", //模式名称
 					"path": "pages/notice/notice-detail",
-					"query":  "info={\"notice_id\":\"79550af2600c72ca009f85296d162f63\",\"master\":\"James💤\",\"team_id\":\"54bac78c5ec7ac490014006f16f1a2fa\",\"team_name\":\"东非大裂谷\"}"
+					"query":  "info={\"notice_id\":\"b00064a7601522af01d84ddc257efb1f\",\"master\":\"James💤\",\"team_id\":\"54bac78c5ec7ac490014006f16f1a2fa\",\"team_name\":\"东非大裂谷\"}"
 				}
 	    ]
 	}

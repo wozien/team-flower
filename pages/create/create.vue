@@ -1,8 +1,8 @@
 <template>
 	<view class="create-page">
-			<text>请输入你的团队名称</text>
-			<input type="text" :focus="true" v-model="name"/>
-			<tf-button type="primary" class="create-btn" :loading="loading" @click="$u.debounce(onCreate, 600, true)">立即创建</tf-button>
+		<view class="title">请输入你的团队名称</view>
+		<input type="text" :focus="true" v-model="name"  :maxlength="14"/>
+		<tf-button type="primary" class="create-btn" :loading="loading" @click="$u.debounce(onCreate, 600, true)" :width="220">立即创建</tf-button>
 	</view>
 </template>
 
@@ -90,23 +90,21 @@
 		height: 100%;
 		background-color: #f8f8f8;
 		padding-top: 20px;
-		> text {
-			color: #999;
+		.title {
 			padding-left: 10px;
+			font-size: 28rpx;
+			text-align: center;
+			margin-bottom: 20px;
 		}
 		
-		> input {
+		input {
 			background: #fff;
 			padding: 10px;
 			color: #999;
 			margin-top: 10px;
-			margin-bottom: 50px;
-		}
-		
-		.create-btn {
-			display: block;
-			margin:0px  10px;
-
+			margin-bottom: 100px;
+			text-align: center;
+			padding: 20px 10px;
 		}
 		
 	}

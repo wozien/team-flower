@@ -1,7 +1,7 @@
 <template>
 	<scroll-view  :scroll-y="true" class="tf-page notice-detail-page">
 		<tf-loading :loading="loading"></tf-loading>
-		<view v-if="!loading" class="main">
+		<view v-if="!loading && notice" class="main">
 			<view class="title">{{ notice.title }}</view>
 			<view class="info">
 				<tf-avatar :url="notice.avatar" size="mini"></tf-avatar>
@@ -71,8 +71,14 @@
 				}).then(teams => {
 					// 是否加入改团队
 					const index = teams.findIndex(team => team.id === this.team_id)
-					if(index > -1) resolve();
-					else reject('is not team member');
+					if(index < 0) {
+						// 跳转到邀请页面
+						uni.navigateTo({
+							url: '../invite/invite?info=' + this.info
+						})
+						reject();
+					}
+					resolve();
 				});
 			});
 			
@@ -81,10 +87,7 @@
 				  return this.loadData().then(() => this.loading = false);
 				}
 			}).catch(e => {
-				// 跳转到邀请页面
-				uni.navigateTo({
-					url: '../invite/invite?info=' + this.info
-				})
+				console.log(e);
 			})
 		},
 		
@@ -99,7 +102,15 @@
 				const noticeCollection = getCollection('notice');
 				return noticeCollection.doc(this.notice_id).get().then(res => {
 					this.notice = this._formatData(res.data);
-					return this.notice;
+					return this.notice._id;
+				}).catch(e => {
+					this.$toast('公告已删除').then(() => {
+						setTimeout(() => {
+							uni.switchTab({
+								url: '../rank/rank'
+							})
+						}, 1500)
+					});
 				})
 			},
 			

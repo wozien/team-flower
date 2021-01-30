@@ -19,11 +19,12 @@ Vue.component('tf-avatar', TfAvatar);
 Vue.component('tf-loading', TfLoading);
 
 // 全局方法
-Vue.prototype.$toast = (title, icon = 'none') => {
+Vue.prototype.$toast = (title, icon = 'none', duration = 1500) => {
 	return new Promise(resolve => {
 		uni.showToast({
 			title,
 			icon,
+			duration,
 			success() {
 				resolve();
 			}

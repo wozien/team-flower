@@ -131,10 +131,9 @@
 		},
 		
 		onLoad() {
-			// this._setTarbar();
 			
 			if(!this.openid) {
-				// 未登录或者未授权
+				// 用户首次进入小程序，跳转slogan页面
 				uni.navigateTo({
 					url: '../index/index'
 				})
@@ -150,8 +149,9 @@
 							}
 						})
 					} else {
+						// 用户未授权
 						uni.navigateTo({
-							url: '../index/index'
+							url: '../auth/auth'
 						})
 					}
 				}
@@ -173,7 +173,7 @@
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
-						url: '../index/index?is_create=1'
+						url: '../create/create'
 					});
 				}
 			});
@@ -206,7 +206,7 @@
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
-						url: '../index/index?is_create=1'
+						url: '../create/create'
 					});
 				}
 			});
@@ -250,7 +250,7 @@
 			
 			createTeam() {
 				uni.navigateTo({
-					url: '../index/index?is_create=1',
+					url: '../create/create',
 					success: () => {
 						this.hideDrawer();
 					}

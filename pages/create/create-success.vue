@@ -4,7 +4,7 @@
 		<text class="flg">创建成功</text>
 		<text class="step-text" @click="invite">最后一步，快邀请好友加入你的团队</text>
 		<tf-button type="primary" :width="320" style="margin-top: 40px" open-type="share">邀请成员</tf-button>
-		<text class="goto" @click="toRank">先进去看看</text>
+		<text class="goto" @click="gotoRank">先进去看看</text>
 	</view>
 </template>
 
@@ -23,10 +23,16 @@
 		},
 		
 		methods: {
-			toRank() {
+			gotoRank() {
 				uni.setStorageSync('TEAM_ID', this.info.team_id);
-				uni.switchTab({
-					url: '../rank/rank'
+				// 订阅消息
+				wx.requestSubscribeMessage({
+					tmplIds: ['VuohxXh57VvHSkihzpk94WtkpuLiRL3XJFXXhttd6Sw', 'ct4NV_LQ7AhLpkulV-feI7AOFHnxgZJuI-X8a2aVlF8'],
+					complete: () => {
+						uni.switchTab({
+							url: '../rank/rank'
+						});
+					}
 				});
 			}
 		}

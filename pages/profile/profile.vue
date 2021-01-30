@@ -95,6 +95,7 @@
 				})
 			},
 			
+			
 			// 重置小红花数
 			_resetFlowers() {
 				const prom1 = wx.cloud.callFunction({
@@ -142,6 +143,7 @@
 .profile-page {
 	height: calc(100% - 50px - env(safe-area-inset-bottom));
 	background-color: #fff;
+	position: relative;
 	.header {
 		overflow: hidden;
 		position: relative;
