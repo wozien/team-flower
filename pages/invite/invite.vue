@@ -54,8 +54,8 @@
 		
 		methods: {
 			createTeam() {
-				uni.navigateTo({
-					url: '../index/index?is_create=1'
+				uni.switchTab({
+					url: '../rank/rank'
 				})
 			},
 			

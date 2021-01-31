@@ -36,7 +36,7 @@
 		methods: {
 			onCreate() {
 				uni.navigateTo({
-					url: '../index/index?is_create=1'
+					url: '../create/create'
 				});
 			},
 			

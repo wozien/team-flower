@@ -131,10 +131,9 @@
 		},
 		
 		onLoad() {
-			// this._setTarbar();
 			
 			if(!this.openid) {
-				// 未登录或者未授权
+				// 用户首次进入小程序，跳转slogan页面
 				uni.navigateTo({
 					url: '../index/index'
 				})
@@ -147,11 +146,13 @@
 						uni.getUserInfo({
 							success: res => {
 								this.setUserInfo(res.userInfo);
+								this.updateAvatar();
 							}
 						})
 					} else {
+						// 用户未授权
 						uni.navigateTo({
-							url: '../index/index'
+							url: '../auth/auth'
 						})
 					}
 				}
@@ -173,7 +174,7 @@
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
-						url: '../index/index?is_create=1'
+						url: '../create/create'
 					});
 				}
 			});
@@ -206,7 +207,7 @@
 					this.loadTeam();
 				} else {
 					uni.redirectTo({
-						url: '../index/index?is_create=1'
+						url: '../create/create'
 					});
 				}
 			});
@@ -231,6 +232,25 @@
 				})
 				this.members = members;
 				this.my = members.find(item => item.openid === this.openid)
+				this.updateAvatar();   // 更新最新头像
+			},
+			
+			// 更新我的最新头像
+			updateAvatar() {
+				if(this.userInfo && this.my.avatar !== this.userInfo.avatarUrl) {
+					this.my.avatar = this.userInfo.avatarUrl;
+					wx.cloud.callFunction({
+						name: 'team',
+						data: {
+							type: 'update_avatar',
+							params: {
+								team_id: this.team_id,
+								openid: this.openid,
+								avatar: this.userInfo.avatarUrl
+							}
+						}
+					})
+				}
 			},
 			
 			toDetail(detail_id) {
@@ -250,7 +270,7 @@
 			
 			createTeam() {
 				uni.navigateTo({
-					url: '../index/index?is_create=1',
+					url: '../create/create',
 					success: () => {
 						this.hideDrawer();
 					}

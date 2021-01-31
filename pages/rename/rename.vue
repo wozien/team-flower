@@ -1,7 +1,7 @@
 <template>
 	<view class="rename-page">
 		<input type="text" :focus="true" v-model="name" placeholder="请输入昵称" placeholder-style="color: #999"/>
-		<tf-button type="primary" class="btn" :loading="loading" @click="$u.debounce(rename, 600, true)">立即修改</tf-button>
+		<tf-button type="primary" class="btn" :loading="loading" :width="220" @click="$u.debounce(rename, 600, true)">立即修改</tf-button>
 	</view>
 </template>
 
@@ -73,7 +73,7 @@
 	.rename-page {
 		height: 100%;
 		background-color: #f8f8f8;
-		padding-top: 10px;
+		// padding-top: 10px;
 		> input {
 			background: #fff;
 			padding: 14px 10px;

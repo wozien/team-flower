@@ -6,7 +6,7 @@
 			'tf-avatar-mini': size === 'mini'
 			}"
 	>
-		<image :src="url" alt="头像" />
+		<image :src="url" alt="头像" mode="aspectFill"/>
 	</view>
 </template>
 

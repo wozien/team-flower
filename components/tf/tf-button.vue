@@ -34,6 +34,9 @@
 		methods: {
 			onClick() {
 				if(this.loading) return;
+				if(this.openType === 'getUserInfo') {
+					this.$emit('getuserinfo')
+				}
 				this.$emit('click');
 			}
 		}
@@ -72,6 +75,14 @@
 			border-color: $color-assistant-1;
 			&.tf-button-plain {
 				color: $color-assistant-1;
+			}
+		}
+		&.tf-button-success {
+			color: #fff;
+			background-color: $color-assistant-2;
+			border-color: $color-assistant-2;
+			&.tf-button-plain {
+				color: $color-assistant-2;
 			}
 		}
 		&.tf-button-plain {

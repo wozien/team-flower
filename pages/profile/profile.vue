@@ -22,7 +22,7 @@
 				<u-icon slot="icon" name="set" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
 			</u-cell-item>
 			<u-cell-item title="设置小红花额度" :arrow="true" @click="onSetQuota">
-				<u-icon slot="icon" name="flower-plain" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
+				<u-icon slot="icon" name="flower" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
 			</u-cell-item>
 			<u-cell-item title="重置排行榜数据" :arrow="true" @click="onResetTeamData">
 				<u-icon slot="icon" name="reset" custom-prefix="tf-icon" size="36" style="margin-right: 8px"></u-icon>
@@ -84,7 +84,7 @@
 			onResetTeamData() {
 				if(!this._checkPeimission()) return;
 				
-				const content= '重置排行榜数据后，所有人的小红花数都将归零重新开始，但赠送记录和扣除记录不会被清楚'
+				const content= '重置排行榜数据后，所有人的小红花数都将归零重新开始，但赠送记录和扣除记录不会被清除'
 				uni.showModal({
 					content,
 					success: res => {
@@ -94,6 +94,7 @@
 					}
 				})
 			},
+			
 			
 			// 重置小红花数
 			_resetFlowers() {
@@ -142,6 +143,7 @@
 .profile-page {
 	height: calc(100% - 50px - env(safe-area-inset-bottom));
 	background-color: #fff;
+	position: relative;
 	.header {
 		overflow: hidden;
 		position: relative;
@@ -201,6 +203,10 @@
 		&::after {
 			border: none;
 		}
+	}
+
+	.u-cell {
+		padding-left: 46rpx !important;
 	}
 }
 </style>

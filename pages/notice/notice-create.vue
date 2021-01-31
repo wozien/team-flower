@@ -167,8 +167,6 @@ export default {
 						content: this.content,
 						team_id: this.team._id,
 						date: Date.now(),
-						avatar: this.userInfo.avatarUrl,
-						creator: this.userInfo.nickName,
 						likes: [],
 						images
 					};
