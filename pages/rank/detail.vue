@@ -257,8 +257,12 @@
 				flex-direction: column;
 				.name {
 					color: #fff;
-					font-size: 36rpx;
+					font-size: 32rpx;
 					font-weight: 600;
+					width: 160px;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					overflow: hidden;
 				}
 				.rank {
 					color: $color-primary;

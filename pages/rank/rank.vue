@@ -146,6 +146,7 @@
 						uni.getUserInfo({
 							success: res => {
 								this.setUserInfo(res.userInfo);
+								this.updateAvatar();
 							}
 						})
 					} else {
@@ -231,6 +232,25 @@
 				})
 				this.members = members;
 				this.my = members.find(item => item.openid === this.openid)
+				this.updateAvatar();   // 更新最新头像
+			},
+			
+			// 更新我的最新头像
+			updateAvatar() {
+				if(this.userInfo && this.my.avatar !== this.userInfo.avatarUrl) {
+					this.my.avatar = this.userInfo.avatarUrl;
+					wx.cloud.callFunction({
+						name: 'team',
+						data: {
+							type: 'update_avatar',
+							params: {
+								team_id: this.team_id,
+								openid: this.openid,
+								avatar: this.userInfo.avatarUrl
+							}
+						}
+					})
+				}
 			},
 			
 			toDetail(detail_id) {

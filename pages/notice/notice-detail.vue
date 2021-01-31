@@ -41,6 +41,18 @@
 			isMaster() {
 				return this.team.master_id === this.openid;
 			},
+			master() {
+				const res = {};
+				if(this.team) {
+					res.id = this.team.master_id;
+					const member = this.team.members.find(mb => mb.openid === res.id);
+					if(member) {
+						res.nickname = member.nickname;
+						res.avatar = member.avatar;
+					}
+				}
+				return res;
+			},
 			...mapState(['team', 'openid', 'teams'])
 		},
 		
@@ -143,6 +155,8 @@
 				item.thumbs = item.likes.length;
 				item.hasLike = item.likes.findIndex(openid => this.openid === openid) !== -1;
 				item.date = formatDate('yyyy-MM-dd hh:mm', new Date(item.date));
+				item.avatar = this.master.avatar;
+				item.creator = this.master.nickname;
 				return item;
 			},
 			

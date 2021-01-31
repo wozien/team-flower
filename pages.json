@@ -51,7 +51,8 @@
 		{
 			"path" : "pages/rename/rename",
 			"style" : {
-				"disableScroll": true
+				"disableScroll": true,
+				"navigationBarTitleText":"修改昵称"
 			}
 		},
 		{
