@@ -30,3 +30,4 @@ uni-app + 小程序云开发
 
 ## 友链
 
+![](https://blog.inoob.xyz/teamflower-qrcode.jpg)
