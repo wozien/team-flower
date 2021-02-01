@@ -29,4 +29,4 @@ uni-app + 小程序云开发
 - 在`Hbuilder`配置微信开发者工具路径，点击运行到小程序
 
 ## 友链
-![团队小红花](https://blog.inoob.xyz/team-flower-qrcode.jpg)
+
