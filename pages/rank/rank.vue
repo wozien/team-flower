@@ -1,11 +1,12 @@
 <template>
 	<view class="rank-page">
 		<view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-		<view class="menu" slot="left" @click="visible=true">
-			<tf-icon icon="menu"></tf-icon>
-			<text class="name">{{ team.name }}</text>
+		<view class="menu" slot="left">
+			<tf-icon icon="menu" @click="visible=true"></tf-icon>
+			<text class="name" @click="visible=true">{{ team.name }}</text>
 			<u-tag v-if="isHelpMode" text="互助" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
 			<u-tag v-else text="管控" shape="circle" bg-color="#7F83BB" color="#fff" border-color="#fff" size="mini"></u-tag>
+			<u-icon name="edit-pen" color="#fff" v-if="isMaster" style="margin-left: 8px;margin-top: 4px;" @click="onClickEditBtn"></u-icon>
 		</view>
 		<view class="content" :style="{ height: contentHeight + 'px' }">
 			<tf-layout :height="contentHeight" :show-footer="false">
@@ -331,6 +332,12 @@
 						this.members.splice(index, 1);
 					}
 				});
+			},
+			
+			onClickEditBtn() {
+				uni.navigateTo({
+					url: '../create/create?is_edit=true'
+				})
 			},
 			
 			/**

@@ -4,6 +4,10 @@
 			<text>每人每月可用额度</text>
 			<input type="number" v-model="quota" placeholder="0.0" :focus="true" />
 		</view>
+		<view class="number">
+			<text>单次可最多赠送</text>
+			<input type="number" v-model="maxConsume" placeholder="0.0" />
+		</view>
 		<view class="flower">
 			<tf-icon icon="flower-plain" :size="34" style="color: #ccc"></tf-icon>
 			<text>{{ quota }}</text>
@@ -14,12 +18,13 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex';
+	import { mapState, mapMutations } from 'vuex';
 	
 	export default {
 		data() {
 			return {
-				quota: 100
+				quota: 100,
+				maxConsume: 100
 			}
 		},
 		
@@ -36,12 +41,16 @@
 				title: '设置小红花初始额度'
 			});
 			this.quota = this.team.quota || 100;
+			this.maxConsume = this.team.maxConsume || this.quota;
 		},
 		
 		methods: {
 			setQuota() {
-				if(+this.quota < 0) {
-					this.$toast('小红花额度不能小于0');
+				if(+this.quota < 0 || +this.maxConsume < 0) {
+					this.$toast('小红花额度不能设置小于0');
+					return;
+				} else if(this.maxConsume > this.quota) {
+					this.$toast('单次赠送数量不能大于总额度');
 					return;
 				}
 				
@@ -63,17 +72,26 @@
 						type: 'reset_quota',
 						params: {
 							team_id: this.team_id,
-							quota: +this.quota
+							quota: +this.quota,
+							maxConsume: +this.maxConsume
 						}
 					}
 				}).then(() => {
 					this.$toast('修改额度成功', 'success').then(() => {
+						this.setTeamQuota({
+							quota: +this.quota,
+							maxConsume: +this.maxConsume
+						});
 						setTimeout(() => {
 							uni.navigateBack({});
 						}, 600);
 					})
 				});
-			}
+			},
+			
+			...mapMutations({
+				setTeamQuota: 'SET_TEAM_QUOTA'
+			})
 		}
 	}
 </script>
