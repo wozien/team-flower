@@ -61,6 +61,8 @@
 					errorMsg = '请输入大于0的红花数量';
 				} else if(!this.add && !this.message) {
 					errorMsg = '请输入扣除原因';
+				} else if(this.team.maxConsume && number > this.team.maxConsume) {
+					errorMsg = '单次赠送数量不能超过' + this.team.maxConsume;
 				} else if(!isMaster && my.quota < number) {
 					errorMsg = '您的小红花额度不足哦~';
 				}

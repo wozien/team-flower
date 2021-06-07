@@ -26,6 +26,13 @@ const mutations = {
 	[types.SET_MODE](state, mode) {
 		state.team.mode = mode;
 	},
+	[types.SET_TEAM_NAME](state, name) {
+		state.team.name = name;
+	},
+	[types.SET_TEAM_QUOTA](state, { quota, maxConsume }) {
+		state.team.quota = quota;
+		state.team.maxConsume = maxConsume;
+	},
 	[types.SET_ONSHOW_TRIGGER](state, status) {
 		state.triggerShowHook = status;
 	},
