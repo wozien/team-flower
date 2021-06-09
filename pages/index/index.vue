@@ -18,17 +18,23 @@
 		},
 		
 		onLoad() {
-			uni.getSetting({
-				success: res => {
-					if(res.authSetting['scope.userInfo']) {
-						uni.getUserInfo({
-							success: res => {
-								this.setUserInfo(res.userInfo);
-							}
-						})
-					} 
-				}
-			})
+			let userInfo = uni.getStorageSync('USER_INFO');
+			if(userInfo) {
+				userInfo = JSON.parse(userInfo);
+				this.setUserInfo(res.userInfo);
+			}
+			// uni.getSetting({
+			// 	success: res => {
+			// 		if(res.authSetting['scope.userInfo']) {
+			// 			uni.getUserInfo({
+			// 				success: res => {
+			// 					console.log(res);
+			// 					this.setUserInfo(res.userInfo);
+			// 				}
+			// 			})
+			// 		} 
+			// 	}
+			// })
 		},
 					
 		onShow() {		

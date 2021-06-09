@@ -115,7 +115,7 @@
 					this.setTeamName(this.name);
 					setTimeout(() => {
 						uni.navigateBack({});
-					}, 1500);
+					}, 1000);
 				}).catch(e => {
 					this.$toast('修改失败: ' + e.message);
 				})

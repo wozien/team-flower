@@ -12,6 +12,7 @@ const noticeTab = {
 const mutations = {
 	[types.SET_USERINFO](state, userInfo) {
 		state.userInfo = userInfo;
+		uni.setStorageSync('USER_INFO', JSON.stringify(userInfo));
 	},
 	[types.SET_OPEN_ID](state, openid) {
 		state.openid = openid;

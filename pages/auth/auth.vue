@@ -8,7 +8,8 @@
 			<text>管理员可以创建不同模式的团队，团队成员之间在不同模式下互动方式也会不同。</text>
 			<text>你还可以实时看到积分排行榜和详细的流水记录，让团队管理更加有条不紊，赶紧创建一个团队试试吧！</text>
 		</view>
-		<button class="btn"  open-type="getUserInfo" @getuserinfo="onGetUserInfo">微信用户一键登录</button>
+		<button class="btn" v-if="canUseProfile" open-type="getUserInfo" @click="onGetUserProfile">微信用户一键登录</button>
+		<button class="btn" v-else open-type="getUserInfo" @getuserinfo="onGetUserInfo">微信用户一键登录</button>
 		<view class="tip">微信用户信息将作为团队成员头像和昵称</view>
 	</view>
 </template>
@@ -18,14 +19,29 @@
 	import { getMyTeams } from '@/common/js/db.js';
 	
 	export default {
+		
+		data() {
+			return {
+				canUseProfile: false
+			}
+		},
+		
 		computed: {
 			...mapState(['openid'])
+		},
+		
+		onShow() {
+			if(uni.getUserProfile) {
+				this.canUseProfile = true;
+			}
 		},
 		
 		methods: {
 			onGetUserInfo(e) {	
 				// 授权成功
 				if(e.detail) {
+					
+					console.log(e.detail);
 
 					if(e.detail.errMsg === 'getUserInfo:fail auth deny') {
 						this.$toast('小程序服务需要您授权微信用户信息哦~', 'none', 3000)
@@ -41,6 +57,26 @@
 					
 					prom.then(() => this._gotoRankPage())
 				} 
+			},
+			
+			onGetUserProfile() {
+			  uni.getUserProfile({
+			  	desc: '用户信息用于排行榜默认昵称头像',
+					success: (res) => {
+						this.setUserInfo(res.userInfo);
+						
+						let prom = Promise.resolve(this.openid);
+						if(!this.openid){
+							prom = this.login();	
+						}
+					
+						prom.then(() => this._gotoRankPage())
+					},
+					fail: (err) => {
+						this.$toast('小程序服务需要您授权微信用户信息哦~', 'none', 3000)
+						return;
+					}
+			  })
 			},
 			
 			_gotoRankPage() {
