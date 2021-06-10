@@ -4,7 +4,7 @@
 			<image src="../../static/img/invite.png"></image>
 			<text class="text">Hi, 你来了~</text>
 			<text class="text">{{ master }} 邀请你加入 {{ team_name }} 团队</text>
-			<button class="join-btn" open-type="getUserInfo" @click="subscribe" @getuserinfo="join">立即加入</button>
+			<button class="join-btn" @click="onClick">立即加入</button>
 			<text class="create-my" @click="createTeam">我要创建自己的团队</text>
 		</view>
 	</view>
@@ -59,46 +59,65 @@
 				})
 			},
 			
-		  join(e) {
-				// 授权成功
-				if(e.detail) {
-					const { userInfo } = e.detail;
+			onClick() {
+				// 订阅
+				this.subscribe();
+				
+				let userInfo = uni.getStorageSync('USER_INFO');
+				if(userInfo) {
+					userInfo = JSON.parse(userInfo);
 					this.setUserInfo(userInfo);
-					
-					let prom;
-					if(!this.openid) {
-						prom = this.login();
-					} else {
-						prom = Promise.resolve(this.openid);
-					}
-					
-					prom.then(openid => {
-						if(!this.team_id) return Promise.reject('团队不存在');
-						
-						const member = Team.generateMember(this.openid, userInfo);
-						// 添加成员
-						return wx.cloud.callFunction({
-							name: 'team',
-							data: {
-								type: 'add_member',
-								params: {
-									team_id: this.team_id,
-									member
-								}
-							}
-						});
-					}).then(() => {
-						// 订阅消息操作后才能跳转
-						return subscribeProm;
-					}).then(() => {
-						uni.setStorageSync('TEAM_ID', this.team_id);
-						uni.switchTab({
-							url: '../rank/rank'
-						});
-					}).catch((reason) => {
-						this.$toast(reason);
-					});
+					this.join(userInfo);
+				} else {
+					uni.getUserProfile({
+						desc: '用户信息用于排行榜默认昵称头像',
+						success: (res) => {
+							this.setUserInfo(res.userInfo);
+							this.join(res.userInfo);
+						},
+						fail: (err) => {
+							this.$toast('小程序服务需要您授权微信用户信息哦~', 'none', 3000);
+							return;
+						}
+					})
 				}
+			},
+			
+		  join(userInfo) {
+				let prom;
+				if(!this.openid) {
+					prom = this.login();
+				} else {
+					prom = Promise.resolve(this.openid);
+				}
+				
+				prom.then(openid => {
+					if(!this.team_id) return Promise.reject('团队不存在');
+					
+					const member = Team.generateMember(this.openid, userInfo);
+					// 添加成员
+					return wx.cloud.callFunction({
+						name: 'team',
+						data: {
+							type: 'add_member',
+							params: {
+								team_id: this.team_id,
+								member
+							}
+						}
+					});
+				}).then(() => {
+					// 订阅消息操作后才能跳转
+					return subscribeProm;
+				}).then(() => {
+					uni.setStorageSync('TEAM_ID', this.team_id);
+					uni.switchTab({
+						url: '../rank/rank'
+					});
+				}).catch((reason) => {
+					this.$toast(reason);
+				});
+				
 			},
 			
 			// 订阅消息

@@ -144,29 +144,13 @@
 			let userInfo = uni.getStorageSync('USER_INFO');
 			if(userInfo) {
 				userInfo = JSON.parse(userInfo);
-				this.setUserInfo(res.userInfo)
+				this.setUserInfo(userInfo);
 			} else {
 				// 用户未授权
 				uni.navigateTo({
 					url: '../auth/auth'
 				});
 			}
-			
-			// uni.getUserInfo 废弃了
-			// uni.getSetting({
-			// 	success: res => {
-			// 		if(res.authSetting['scope.userInfo']) {
-			// 			uni.getUserInfo({
-			// 				success: res => {
-			// 					this.setUserInfo(res.userInfo);
-			// 					this.updateAvatar();
-			// 				}
-			// 			})
-			// 		} else {
-						
-			// 		}
-			// 	}
-			// })
 		},
 				
 		onShow() {

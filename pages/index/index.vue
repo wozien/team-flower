@@ -21,20 +21,9 @@
 			let userInfo = uni.getStorageSync('USER_INFO');
 			if(userInfo) {
 				userInfo = JSON.parse(userInfo);
-				this.setUserInfo(res.userInfo);
+				this.setUserInfo(userInfo);
 			}
-			// uni.getSetting({
-			// 	success: res => {
-			// 		if(res.authSetting['scope.userInfo']) {
-			// 			uni.getUserInfo({
-			// 				success: res => {
-			// 					console.log(res);
-			// 					this.setUserInfo(res.userInfo);
-			// 				}
-			// 			})
-			// 		} 
-			// 	}
-			// })
+			// wx.getUserInfo 已经废弃
 		},
 					
 		onShow() {		
