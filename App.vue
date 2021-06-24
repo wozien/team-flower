@@ -11,7 +11,7 @@
 					traceUser: true,
 				});
 				
-				this._setTarbar();
+				// this._setTarbar();
 			}
 		},
 		

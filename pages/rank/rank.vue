@@ -333,18 +333,6 @@
 				})
 			},
 			
-			/**
-			 * 小程序审核hack代码，根据后台配置动态显示公告的tab
-			 */
-			_setTarbar() {
-				const configCollection = getCollection('config');
-				configCollection.doc('28ee4e3e601031110129bcf56a6d81ac').get().then(({ data }) => {
-					if(data.notice) {
-						this.addNoticeTab();
-					}
-				})
-			},
-			
 			...mapMutations({
 				setTeam: 'SET_TEAM',
 				setTeams: 'SET_MY_TEAMS',
