@@ -30,4 +30,4 @@ uni-app + 小程序云开发
 
 ## 友链
 
-![](https://blog.inoob.xyz/teamflower-qrcode.jpg)
+![](https://wozien-cloud-oss.oss-cn-shenzhen.aliyuncs.com/images/avatar/68747470733a2f2f626c6f672e696e6f6f622e78797a2f7465616d666c6f7765722d7172636f64652e6a7067.jpeg)
